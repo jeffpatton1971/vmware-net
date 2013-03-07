@@ -65,10 +65,16 @@
                 <br />
                 <asp:Label ID="lblCpu" runat="server" Text="CPU"></asp:Label>
                 &nbsp;<asp:DropDownList ID="cboCpus" runat="server">
+                    <asp:ListItem>1</asp:ListItem>
+                    <asp:ListItem>2</asp:ListItem>
+                    <asp:ListItem>4</asp:ListItem>
                 </asp:DropDownList>
                 <br />
                 <asp:Label ID="lblRam" runat="server" Text="Ram"></asp:Label>
                 &nbsp;<asp:DropDownList ID="cboRam" runat="server">
+                    <asp:ListItem>2</asp:ListItem>
+                    <asp:ListItem>4</asp:ListItem>
+                    <asp:ListItem>8</asp:ListItem>
                 </asp:DropDownList>
                 <br />
                 <asp:Label ID="lblIpAddress" runat="server" Text="Ip Address"></asp:Label>
