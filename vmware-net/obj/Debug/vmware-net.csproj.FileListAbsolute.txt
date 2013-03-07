@@ -1,0 +1,5 @@
+C:\git\vmware-net\vmware-net\bin\vmware-net.dll
+C:\git\vmware-net\vmware-net\bin\vmware-net.pdb
+C:\git\vmware-net\vmware-net\obj\Debug\vmware-net.csprojResolveAssemblyReference.cache
+C:\git\vmware-net\vmware-net\obj\Debug\vmware-net.dll
+C:\git\vmware-net\vmware-net\obj\Debug\vmware-net.pdb

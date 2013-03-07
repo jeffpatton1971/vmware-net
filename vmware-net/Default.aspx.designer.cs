@@ -22,6 +22,15 @@ namespace vmware_net {
         protected global::System.Web.UI.HtmlControls.HtmlForm frmProvision;
         
         /// <summary>
+        /// Login_Panel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Login_Panel;
+        
+        /// <summary>
         /// lblLoginPanelTitle control.
         /// </summary>
         /// <remarks>
@@ -29,6 +38,24 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblLoginPanelTitle;
+        
+        /// <summary>
+        /// lblSdkServer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSdkServer;
+        
+        /// <summary>
+        /// txtSdkServer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtSdkServer;
         
         /// <summary>
         /// lblUsername control.
@@ -76,6 +103,15 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Button cmdConnect;
         
         /// <summary>
+        /// Vm_Panel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Vm_Panel;
+        
+        /// <summary>
         /// lblVmPanelTitle control.
         /// </summary>
         /// <remarks>
@@ -83,24 +119,6 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblVmPanelTitle;
-        
-        /// <summary>
-        /// lblSdkServer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSdkServer;
-        
-        /// <summary>
-        /// txtSdkServer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtSdkServer;
         
         /// <summary>
         /// lblSourceVm control.
@@ -211,6 +229,24 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.DropDownList cboPortGroups;
         
         /// <summary>
+        /// lblResourcePool control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblResourcePool;
+        
+        /// <summary>
+        /// cboResourcePools control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboResourcePools;
+        
+        /// <summary>
         /// lblCpu control.
         /// </summary>
         /// <remarks>
@@ -308,5 +344,32 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cmdProvision;
+        
+        /// <summary>
+        /// Results_Panel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Results_Panel;
+        
+        /// <summary>
+        /// txtResults control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtResults;
+        
+        /// <summary>
+        /// cmdClose control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button cmdClose;
     }
 }

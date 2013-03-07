@@ -16,8 +16,6 @@ namespace vmware_net
         public static string sUsername;
         public static string sPassword;
         public static string sViServer = WebConfigurationManager.AppSettings["viServer"].ToString();
-        public static string adServer = WebConfigurationManager.AppSettings["adServer"].ToString();
-        public static string adRootPath = WebConfigurationManager.AppSettings["adRootPath"].ToString();
     }
     public partial class Default : System.Web.UI.Page
     {
@@ -357,7 +355,144 @@ namespace vmware_net
         }
         protected void Page_Load(object sender, EventArgs e)
         {
+            //
+            // Uncomment the following code to redirect this app to HTTPS once
+            //  you have a valid cert installed on your IIS box.
+            //
+            //if (!Request.IsLocal && !Request.IsSecureConnection)
+            //{
+            //    string redirectUrl = Request.Url.ToString().Replace("http:", "https:");
+            //    Response.Redirect(redirectUrl);
+            //}
 
+            //
+            // Read in the URL of the Vmware SDK Server from web.config
+            // Uncomment the code below to store the sdk servername in the web.config
+            //
+            //txtSdkServer.Text = WebConfigurationManager.AppSettings["viServer"].ToString();
+        }
+
+        protected void cmdConnect_Click(object sender, EventArgs e)
+        {
+            //
+            // The code here establishes a connection to your Vmware Datacenter/Cluster/Standalone
+            // server and populates the controls in the vm_panel.
+            //
+            Globals.sUsername = txtUsername.Text;
+            Globals.sPassword = txtPassword.Text;
+            //
+            // Comment or remove the code below if you populate the sdk server from web.config
+            //
+            Globals.sViServer = txtSdkServer.Text;
+
+            VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+
+            //
+            // Get a list of clusters
+            //
+
+            List<ClusterComputeResource> lstClusters = GetClusters(vimClient);
+            foreach (ClusterComputeResource itmCluster in lstClusters)
+            {
+                ListItem thisCluster = new ListItem();
+                thisCluster.Text = itmCluster.Name;
+                thisCluster.Value = itmCluster.MoRef.Value;
+                cboClusters.Items.Add(thisCluster);
+            }
+
+            //
+            // Get a list of datastores
+            //
+
+            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            Datacenter itmDatacenter = lstDatacenters[0];
+
+            List<Datastore> lstDatastores = GetDataStore(vimClient, itmDatacenter);
+            lstDatastores = lstDatastores.OrderByDescending(thisStore => thisStore.Info.FreeSpace).ToList();
+            foreach (Datastore itmDatastore in lstDatastores)
+            {
+                ListItem thisDatastore = new ListItem();
+                thisDatastore.Text = itmDatastore.Name;
+                thisDatastore.Value = itmDatastore.MoRef.Value;
+                cboDatastores.Items.Add(thisDatastore);
+            }
+
+            //
+            // Get a list of network portgroups
+            //
+
+            List<DistributedVirtualPortgroup> lstDVPortGroups = GetDVPortGroups(vimClient, itmDatacenter);
+            if (lstDVPortGroups != null)
+            {
+                foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
+                {
+                    ListItem thisPortGroup = new ListItem();
+                    thisPortGroup.Text = itmPortGroup.Name;
+                    thisPortGroup.Value = itmPortGroup.MoRef.ToString();
+                    cboPortGroups.Items.Add(thisPortGroup);
+                }
+            }
+
+            //
+            // Get a list of OS Customizations
+            //
+
+            List<CustomizationSpecInfo> lstSpecs = GetCustomizationSpecs(vimClient);
+            if (lstSpecs != null)
+            {
+                foreach (CustomizationSpecInfo itmSpec in lstSpecs)
+                {
+                    ListItem thisSpec = new ListItem();
+                    thisSpec.Text = itmSpec.Name;
+                    thisSpec.Value = itmSpec.Name + "." + itmSpec.Type;
+                    cboCustomizations.Items.Add(thisSpec);
+                }
+            }
+
+            //
+            // Get a list of clones
+            //
+
+            List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, null);
+            if (lstVirtualMachines != null)
+            {
+                foreach (VirtualMachine itmVirtualMachine in lstVirtualMachines)
+                {
+                    ListItem thisVirtualMachine = new ListItem();
+                    thisVirtualMachine.Text = itmVirtualMachine.Name;
+                    thisVirtualMachine.Value = itmVirtualMachine.MoRef.ToString();
+                    cboSourceVms.Items.Add(thisVirtualMachine);
+                }
+            }
+
+            //
+            // Close the session with the server
+            //
+            vimClient.Disconnect();
+
+            //
+            // Hide the login controls and show the vm controls
+            //
+            Login_Panel.Visible = false;
+            Vm_Panel.Visible = true;
+        }
+
+        protected void cmdProvision_Click(object sender, EventArgs e)
+        {
+            //
+            // Hide the vm controls and show the result box
+            //
+            Vm_Panel.Visible = false;
+            Results_Panel.Visible = true;
+        }
+
+        protected void cmdClose_Click(object sender, EventArgs e)
+        {
+            //
+            // Hide the reults and show the login panel, clear all form items
+            //
+            Results_Panel.Visible = false;
+            Login_Panel.Visible = true;
         }
     }
 }
