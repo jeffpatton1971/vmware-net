@@ -384,75 +384,13 @@ namespace vmware_net
             // Comment or remove the code below if you populate the sdk server from web.config
             //
             Globals.sViServer = txtSdkServer.Text;
-
+            //
+            // Establish a connection with the Vmware server
+            //
             VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
-
-            //
-            // Get a list of clusters
-            //
-
-            List<ClusterComputeResource> lstClusters = GetClusters(vimClient);
-            foreach (ClusterComputeResource itmCluster in lstClusters)
-            {
-                ListItem thisCluster = new ListItem();
-                thisCluster.Text = itmCluster.Name;
-                thisCluster.Value = itmCluster.MoRef.Value;
-                cboClusters.Items.Add(thisCluster);
-            }
-
-            //
-            // Get a list of datastores
-            //
-
-            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
-            Datacenter itmDatacenter = lstDatacenters[0];
-
-            List<Datastore> lstDatastores = GetDataStore(vimClient, itmDatacenter);
-            lstDatastores = lstDatastores.OrderByDescending(thisStore => thisStore.Info.FreeSpace).ToList();
-            foreach (Datastore itmDatastore in lstDatastores)
-            {
-                ListItem thisDatastore = new ListItem();
-                thisDatastore.Text = itmDatastore.Name;
-                thisDatastore.Value = itmDatastore.MoRef.Value;
-                cboDatastores.Items.Add(thisDatastore);
-            }
-
-            //
-            // Get a list of network portgroups
-            //
-
-            List<DistributedVirtualPortgroup> lstDVPortGroups = GetDVPortGroups(vimClient, itmDatacenter);
-            if (lstDVPortGroups != null)
-            {
-                foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
-                {
-                    ListItem thisPortGroup = new ListItem();
-                    thisPortGroup.Text = itmPortGroup.Name;
-                    thisPortGroup.Value = itmPortGroup.MoRef.ToString();
-                    cboPortGroups.Items.Add(thisPortGroup);
-                }
-            }
-
-            //
-            // Get a list of OS Customizations
-            //
-
-            List<CustomizationSpecInfo> lstSpecs = GetCustomizationSpecs(vimClient);
-            if (lstSpecs != null)
-            {
-                foreach (CustomizationSpecInfo itmSpec in lstSpecs)
-                {
-                    ListItem thisSpec = new ListItem();
-                    thisSpec.Text = itmSpec.Name;
-                    thisSpec.Value = itmSpec.Name + "." + itmSpec.Type;
-                    cboCustomizations.Items.Add(thisSpec);
-                }
-            }
-
             //
             // Get a list of clones
             //
-
             List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, null);
             if (lstVirtualMachines != null)
             {
@@ -464,12 +402,80 @@ namespace vmware_net
                     cboSourceVms.Items.Add(thisVirtualMachine);
                 }
             }
-
+            //
+            // Get a list of OS Customizations
+            //
+            List<CustomizationSpecInfo> lstSpecs = GetCustomizationSpecs(vimClient);
+            if (lstSpecs != null)
+            {
+                foreach (CustomizationSpecInfo itmSpec in lstSpecs)
+                {
+                    ListItem thisSpec = new ListItem();
+                    thisSpec.Text = itmSpec.Name;
+                    thisSpec.Value = itmSpec.Name + "." + itmSpec.Type;
+                    cboCustomizations.Items.Add(thisSpec);
+                }
+            }
+            //
+            // Get a list of clusters
+            //
+            List<ClusterComputeResource> lstClusters = GetClusters(vimClient);
+            foreach (ClusterComputeResource itmCluster in lstClusters)
+            {
+                ListItem thisCluster = new ListItem();
+                thisCluster.Text = itmCluster.Name;
+                thisCluster.Value = itmCluster.MoRef.Value;
+                cboClusters.Items.Add(thisCluster);
+            }
+            //
+            // Need to get at the Datacenter
+            //
+            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            Datacenter itmDatacenter = lstDatacenters[0];
+            //
+            // Get a list of datastores
+            //
+            List<Datastore> lstDatastores = GetDataStore(vimClient, itmDatacenter);
+            lstDatastores = lstDatastores.OrderByDescending(thisStore => thisStore.Info.FreeSpace).ToList();
+            foreach (Datastore itmDatastore in lstDatastores)
+            {
+                ListItem thisDatastore = new ListItem();
+                thisDatastore.Text = itmDatastore.Name;
+                thisDatastore.Value = itmDatastore.MoRef.Value;
+                cboDatastores.Items.Add(thisDatastore);
+            }
+            //
+            // Get a list of network portgroups
+            //
+            List<DistributedVirtualPortgroup> lstDVPortGroups = GetDVPortGroups(vimClient, itmDatacenter);
+            if (lstDVPortGroups != null)
+            {
+                foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
+                {
+                    ListItem thisPortGroup = new ListItem();
+                    thisPortGroup.Text = itmPortGroup.Name;
+                    thisPortGroup.Value = itmPortGroup.MoRef.ToString();
+                    cboPortGroups.Items.Add(thisPortGroup);
+                }
+            }
+            //
+            // Get a list of Resource Pools
+            //
+            List<ResourcePool> lstResPools = GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            if (lstResPools != null)
+            {
+                foreach (ResourcePool itmResPool in lstResPools)
+                {
+                    ListItem thisResPool = new ListItem();
+                    thisResPool.Text = itmResPool.Name;
+                    thisResPool.Value = itmResPool.MoRef.ToString();
+                    cboResourcePools.Items.Add(thisResPool);
+                }
+            }
             //
             // Close the session with the server
             //
             vimClient.Disconnect();
-
             //
             // Hide the login controls and show the vm controls
             //
@@ -493,6 +499,90 @@ namespace vmware_net
             //
             Results_Panel.Visible = false;
             Login_Panel.Visible = true;
+        }
+
+        protected void cboClusters_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //
+            // The selected cluster changed so we need to update the following items
+            // - Datastore
+            // - Portgroups
+            // - Resource Pools
+            //
+            //
+            // Establish a connection with the Vmware server
+            //
+            VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            //
+            // Clear out existing entries
+            //
+            cboDatastores.Items.Clear();
+            cboPortGroups.Items.Clear();
+            cboResourcePools.Items.Clear();
+            //
+            // Need to get at the Datacenter for the selected cluster
+            //
+            List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            Datacenter itmDatacenter = lstDatacenters[0];
+            //
+            // Update datastore list
+            //
+            List<Datastore> lstDatastores = GetDataStore(vimClient, itmDatacenter);
+            lstDatastores = lstDatastores.OrderByDescending(thisStore => thisStore.Info.FreeSpace).ToList();
+            foreach (Datastore itmDatastore in lstDatastores)
+            {
+                ListItem thisDatastore = new ListItem();
+                thisDatastore.Text = itmDatastore.Name;
+                thisDatastore.Value = itmDatastore.MoRef.Value;
+                cboDatastores.Items.Add(thisDatastore);
+            }
+            //
+            // Update list of network portgroups
+            //
+            List<DistributedVirtualPortgroup> lstDVPortGroups = GetDVPortGroups(vimClient, itmDatacenter);
+            if (lstDVPortGroups != null)
+            {
+                foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
+                {
+                    ListItem thisPortGroup = new ListItem();
+                    thisPortGroup.Text = itmPortGroup.Name;
+                    thisPortGroup.Value = itmPortGroup.MoRef.ToString();
+                    cboPortGroups.Items.Add(thisPortGroup);
+                }
+            }
+            else
+            {
+                List<Network> lstPortGroups = GetPortGroups(vimClient, itmDatacenter);
+                if (lstPortGroups != null)
+                {
+                    foreach (Network itmPortGroup in lstPortGroups)
+                    {
+                        ListItem thisPortGroup = new ListItem();
+                        thisPortGroup.Text = itmPortGroup.Name;
+                        thisPortGroup.Value = itmPortGroup.MoRef.ToString();
+                        cboPortGroups.Items.Add(thisPortGroup);
+                    }
+                }
+            }
+            //
+            // Get a list of Resource Pools
+            //
+            List<ResourcePool> lstResPools = GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            if (lstResPools != null)
+            {
+                foreach (ResourcePool itmResPool in lstResPools)
+                {
+                    ListItem thisResPool = new ListItem();
+                    thisResPool.Text = itmResPool.Name;
+                    thisResPool.Value = itmResPool.MoRef.ToString();
+                    cboResourcePools.Items.Add(thisResPool);
+                }
+            }
+            //
+            // Close the session with the server
+            //
+            vimClient.Disconnect();
         }
     }
 }

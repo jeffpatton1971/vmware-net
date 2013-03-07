@@ -211,13 +211,13 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.DropDownList cboDatastores;
         
         /// <summary>
-        /// lblNetwork control.
+        /// lblPortGroups control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblNetwork;
+        protected global::System.Web.UI.WebControls.Label lblPortGroups;
         
         /// <summary>
         /// cboPortGroups control.

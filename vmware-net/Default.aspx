@@ -48,14 +48,14 @@
                 </asp:DropDownList>
                 <br />
                 <asp:Label ID="lblCluster" runat="server" Text="Cluster"></asp:Label>
-                &nbsp;<asp:DropDownList ID="cboClusters" runat="server">
+                &nbsp;<asp:DropDownList ID="cboClusters" runat="server" AutoPostBack="True" OnSelectedIndexChanged="cboClusters_SelectedIndexChanged">
                 </asp:DropDownList>
                 <br />
                 <asp:Label ID="lblDatastore" runat="server" Text="Datastore"></asp:Label>
                 &nbsp;<asp:DropDownList ID="cboDatastores" runat="server">
                 </asp:DropDownList>
                 <br />
-                <asp:Label ID="lblNetwork" runat="server" Text="Network"></asp:Label>
+                <asp:Label ID="lblPortGroups" runat="server" Text="Port Groups"></asp:Label>
                 &nbsp;<asp:DropDownList ID="cboPortGroups" runat="server">
                 </asp:DropDownList>
                 <br />
