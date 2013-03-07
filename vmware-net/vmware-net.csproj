@@ -55,6 +55,18 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="VimService51, Version=5.1.0.0, Culture=neutral, PublicKeyToken=10980b081e887e9f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Windows\assembly\GAC_MSIL\VimService51\5.1.0.0__10980b081e887e9f\VimService51.dll</HintPath>
+    </Reference>
+    <Reference Include="VimService51.XmlSerializers, Version=5.1.0.0, Culture=neutral, PublicKeyToken=10980b081e887e9f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Windows\assembly\GAC_MSIL\VimService51.XmlSerializers\5.1.0.0__10980b081e887e9f\VimService51.XmlSerializers.dll</HintPath>
+    </Reference>
+    <Reference Include="VMware.Vim, Version=5.1.0.0, Culture=neutral, PublicKeyToken=10980b081e887e9f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\VMware.Vim.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
