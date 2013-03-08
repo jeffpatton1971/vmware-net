@@ -321,12 +321,18 @@ namespace vmware_net
         }
         protected List<VirtualMachine> GetVirtualMachines(VimClient vimClient, Datacenter selectedDC = null, string vmName = null)
         {
+            //
+            // Get a list of virtual machines
+            //
             List<VirtualMachine> lstVirtualMachines = new List<VirtualMachine>();
             NameValueCollection vmFilter = new NameValueCollection();
             ManagedObjectReference DcMoRef = new ManagedObjectReference();
 
             if (vmName != null)
             {
+                //
+                // A specific virtual machine
+                //
                 vmFilter.Add("name", vmName);
             }
             else
@@ -336,6 +342,9 @@ namespace vmware_net
 
             if (selectedDC != null)
             {
+                //
+                // A specific datacenter
+                //
                 DcMoRef = selectedDC.MoRef;
             }
             else
@@ -344,6 +353,9 @@ namespace vmware_net
             }
             try
             {
+                //
+                // If DcMoRef and vmFilter are null return all Vm's, otherwise return specific vm's
+                //
                 List<EntityViewBase> appVirtualMachines = vimClient.FindEntityViews(typeof(VirtualMachine), DcMoRef, vmFilter, null);
                 if (appVirtualMachines != null)
                 {
@@ -371,8 +383,14 @@ namespace vmware_net
         }
         protected List<CustomizationSpecInfo> GetCustomizationSpecs(VimClient vimClient)
         {
+            //
+            // Get a list of Customization Spec Info items
+            //
             try
             {
+                //
+                // Get all Spec Info items
+                //
                 List<CustomizationSpecInfo> lstSpecInfo = new List<CustomizationSpecInfo>();
                 CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
                 if (specManager != null)
@@ -400,8 +418,14 @@ namespace vmware_net
         }
         protected CustomizationSpecItem GetCustomizationSpecItem(VimClient vimClient, string specName = null)
         {
+            //
+            // Get one or more Customization Spec Items
+            //
             try
             {
+                //
+                // Need a manager to collect the spec items
+                //
                 CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
                 if (specManager != null)
                 {
@@ -425,16 +449,25 @@ namespace vmware_net
         }
         protected List<ClusterComputeResource> GetClusters(VimClient vimClient, string clusterName = null)
         {
+            //
+            // Get one or more clusters
+            //
             List<ClusterComputeResource> lstClusters = new List<ClusterComputeResource>();
             List<EntityViewBase> appClusters = new List<EntityViewBase>();
             try
             {
                 if (clusterName == null)
                 {
+                    //
+                    // Get all the clusters
+                    //
                     appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, null, null);
                 }
                 else
                 {
+                    //
+                    // Get a specific cluster
+                    //
                     NameValueCollection clusterFilter = new NameValueCollection();
                     clusterFilter.Add("name", clusterName);
                     appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, clusterFilter, null);
@@ -465,16 +498,25 @@ namespace vmware_net
         }
         protected List<HostSystem> GetHosts(VimClient vimClient, string hostParent = null)
         {
+            //
+            // Get one or more virtual hosts
+            //
             List<HostSystem> lstHosts = new List<HostSystem>();
             List<EntityViewBase> appHosts = new List<EntityViewBase>();
             try
             {
                 if (hostParent == null)
                 {
+                    //
+                    // Get all the hosts
+                    //
                     appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, null, null);
                 }
                 else
                 {
+                    //
+                    // Get all the hosts in a cluster
+                    //
                     NameValueCollection hostFilter = new NameValueCollection();
                     hostFilter.Add("parent", hostParent);
 
@@ -506,11 +548,17 @@ namespace vmware_net
         }
         protected List<Datacenter> GetDcFromCluster(VimClient vimClient, string clusterParent)
         {
+            //
+            // Get a datacenter based on the cluster
+            //
             List<Datacenter> lstDataCenters = new List<Datacenter>();
             NameValueCollection parentFilter = new NameValueCollection();
             parentFilter.Add("hostFolder", clusterParent);
             try
             {
+                //
+                // Get a specific datacenter based on parentFilter
+                //
                 List<EntityViewBase> arrDataCenters = vimClient.FindEntityViews(typeof(Datacenter), null, parentFilter, null);
                 if (arrDataCenters != null)
                 {
@@ -538,6 +586,9 @@ namespace vmware_net
         }
         protected List<ResourcePool> GetResPools(VimClient vimClient, string ClusterMoRefVal)
         {
+            //
+            // Get resource pools from a specific cluster
+            //
             List<ResourcePool> lstResPools = new List<ResourcePool>();
             NameValueCollection clusterFilter = new NameValueCollection();
             clusterFilter.Add("parent", ClusterMoRefVal);
