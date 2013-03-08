@@ -29,47 +29,6 @@ namespace vmware_net
             ServiceContent vimServiceContent = new ServiceContent();
             UserSession vimSession = new UserSession();
             //
-            // Validate viServer for appropriate values
-            //
-            viServer = viServer.Trim().ToLower();
-            if (viServer.Contains("://") == false)
-            {
-                //
-                // Assuming if there is no :// someone entered flat server name
-                //
-                viServer = "https://" + viServer;
-            }
-            //
-            // Convert the string into a URI for further testing
-            //
-            Uri uriVServer = new Uri(viServer);
-            //
-            // Check to see what protocol we're using
-            //
-            string urlScheme = uriVServer.Scheme;
-            switch (urlScheme)
-            {
-                case "https":
-                    break;
-                default:
-                    viServer = viServer.Replace(uriVServer.Scheme + "://", "https://");
-                    break;
-            }
-            //
-            // Check to see what that path is
-            //
-            if (uriVServer.AbsolutePath == "/")
-            {
-                viServer = viServer + "/sdk";
-            }
-            else if (uriVServer.AbsolutePath != "/sdk")
-            {
-                //
-                // Some other path is listed
-                //
-                viServer = viServer.Replace(uriVServer.AbsolutePath, "/sdk");
-            }
-            //
             // Connect over https to the /sdk page
             //
             vimClient.Connect(viServer);
@@ -400,6 +359,51 @@ namespace vmware_net
                 return null;
             }
         }
+        protected string ValidateServer(string viServer)
+        {
+            //
+            // Validate viServer for appropriate values
+            //
+            viServer = viServer.Trim().ToLower();
+            if (viServer.Contains("://") == false)
+            {
+                //
+                // Assuming if there is no :// someone entered flat server name
+                //
+                viServer = "https://" + viServer;
+            }
+            //
+            // Convert the string into a URI for further testing
+            //
+            Uri uriVServer = new Uri(viServer);
+            //
+            // Check to see what protocol we're using
+            //
+            string urlScheme = uriVServer.Scheme;
+            switch (urlScheme)
+            {
+                case "https":
+                    break;
+                default:
+                    viServer = viServer.Replace(uriVServer.Scheme + "://", "https://");
+                    break;
+            }
+            //
+            // Check to see what that path is
+            //
+            if (uriVServer.AbsolutePath == "/")
+            {
+                viServer = viServer + "/sdk";
+            }
+            else if (uriVServer.AbsolutePath != "/sdk")
+            {
+                //
+                // Some other path is listed
+                //
+                viServer = viServer.Replace(uriVServer.AbsolutePath, "/sdk");
+            }
+            return viServer;
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             //
@@ -428,7 +432,7 @@ namespace vmware_net
             //
             // Comment or remove the code below if you populate the sdk server from web.config
             //
-            Globals.sViServer = txtSdkServer.Text;
+            Globals.sViServer = ValidateServer(txtSdkServer.Text);
             //
             // Establish a connection with the Vmware server
             //
