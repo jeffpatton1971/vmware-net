@@ -1,13 +1,7 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="vmware_net.Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="vmware_net.Default" MasterPageFile="vmware-net.Master" %>
 
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title>Virtual Machine Provisioning Site</title>
-</head>
-<body>
-    <form id="frmProvision" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div id="blueprint_div" class="container" runat="server">
         <asp:Panel ID="Login_Panel" runat="server">
             <div id="login_panel_div">
                 <asp:Label ID="lblLoginPanelTitle" runat="server" Text="Enter Credentials"></asp:Label>
@@ -26,8 +20,7 @@
                 &nbsp;<asp:TextBox ID="txtUsername" runat="server"></asp:TextBox>
                 <br />
                 <asp:Label ID="lblPassword" runat="server" Text="Password"></asp:Label>
-                &nbsp;
-            <asp:TextBox ID="txtPassword" runat="server" TextMode="Password"></asp:TextBox>
+                &nbsp;<asp:TextBox ID="txtPassword" runat="server" TextMode="Password"></asp:TextBox>
                 <br />
                 <asp:Button ID="cmdConnect" runat="server" Text="Connect" OnClick="cmdConnect_Click" />
             </div>
@@ -98,12 +91,11 @@
             </div>
         </asp:Panel>
         <asp:Panel ID="Error_Panel" runat="server" BorderStyle="Solid" Visible="False" Height="640px" Width="480px">
-            <div id="error_panel_div" style="height:100%">
+            <div id="error_panel_div" style="height: 100%">
                 <asp:TextBox ID="txtErrors" runat="server" Height="90%" Width="99%" TextMode="MultiLine" ForeColor="Red" Font-Bold="True" BorderStyle="None"></asp:TextBox>
                 <br />
                 <asp:Button ID="cmdReturn" runat="server" Text="Return" OnClick="cmdReturn_Click" />
             </div>
         </asp:Panel>
-    </form>
-</body>
-</html>
+    </div>
+</asp:Content>

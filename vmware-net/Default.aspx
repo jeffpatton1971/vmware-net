@@ -90,9 +90,9 @@
                 <asp:Button ID="cmdClose" runat="server" Text="Close" OnClick="cmdClose_Click" />
             </div>
         </asp:Panel>
-        <asp:Panel ID="Error_Panel" runat="server" BorderStyle="Solid" Visible="False" Height="640px" Width="480px">
-            <div id="error_panel_div" style="height: 100%">
-                <asp:TextBox ID="txtErrors" runat="server" Height="90%" Width="99%" TextMode="MultiLine" ForeColor="Red" Font-Bold="True" BorderStyle="None"></asp:TextBox>
+        <asp:Panel ID="Error_Panel" runat="server" BorderStyle="Solid" Visible="False" Height="480px" Width="640px" BackColor="Silver">
+            <div id="error_panel_div" style="height:480px;width:640px">
+                <asp:TextBox ID="txtErrors" runat="server" Height="60%" Width="640px" TextMode="MultiLine" ForeColor="Red" Font-Bold="True" BorderStyle="None" ReadOnly="True"></asp:TextBox>
                 <br />
                 <asp:Button ID="cmdReturn" runat="server" Text="Return" OnClick="cmdReturn_Click" />
             </div>
