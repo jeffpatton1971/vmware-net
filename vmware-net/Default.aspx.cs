@@ -29,9 +29,46 @@ namespace vmware_net
             ServiceContent vimServiceContent = new ServiceContent();
             UserSession vimSession = new UserSession();
             //
+            // Validate viServer for appropriate values
+            //
+            viServer = viServer.Trim().ToLower();
+            if (viServer.Contains("://") == false)
+            {
+                //
+                // Assuming if there is no :// someone entered flat server name
+                //
+                viServer = "https://" + viServer;
+            }
+            //
+            // Convert the string into a URI for further testing
+            //
+            Uri uriVServer = new Uri(viServer);
+            //
+            // Check to see what protocol we're using
+            //
+            string urlScheme = uriVServer.Scheme;
+            switch (urlScheme)
+            {
+                case "https":
+                    break;
+                default:
+                    viServer = viServer.Replace(uriVServer.Scheme + "://", "https://");
+                    break;
+            }
+            //
+            // Check to see what that path is
+            //
+            if (uriVServer.AbsolutePath != "/sdk")
+            {
+                //
+                // Some other path is listed
+                //
+                viServer = viServer.Replace(uriVServer.AbsolutePath, "/sdk");
+            }
+            //
             // Connect over https to the /sdk page
             //
-            vimClient.Connect("https://" + viServer.Trim() + "/sdk");
+            vimClient.Connect(viServer);
             vimSession = vimClient.Login(viUser, viPassword);
             vimServiceContent = vimClient.ServiceContent;
 
