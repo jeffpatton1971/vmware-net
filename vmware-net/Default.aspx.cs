@@ -886,6 +886,9 @@ namespace vmware_net
             //
             List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, cboSourceVms.SelectedItem.Text);
             VirtualMachine itmVirtualMachine = lstVirtualMachines[0];
+            //
+            // Make sure the spec file type matches the guest os
+            //
             if ((specType[specType.GetUpperBound(0)]).Contains(itmVirtualMachine.Guest.GuestFamily) == false)
             {
                 vimClient.Disconnect();
