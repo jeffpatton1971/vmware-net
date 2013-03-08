@@ -22,10 +22,15 @@ namespace vmware_net
     {
         protected VimClient ConnectServer(string viServer, string viUser, string viPassword)
         {
+            //
+            // Establish a connetion to the provided sdk server
+            //
             VimClient vimClient = new VimClient();
             ServiceContent vimServiceContent = new ServiceContent();
             UserSession vimSession = new UserSession();
-
+            //
+            // Connect over https to the /sdk page
+            //
             vimClient.Connect("https://" + viServer.Trim() + "/sdk");
             vimSession = vimClient.Login(viUser, viPassword);
             vimServiceContent = vimClient.ServiceContent;
@@ -371,7 +376,6 @@ namespace vmware_net
             //
             //txtSdkServer.Text = WebConfigurationManager.AppSettings["viServer"].ToString();
         }
-
         protected void cmdConnect_Click(object sender, EventArgs e)
         {
             //
@@ -482,7 +486,6 @@ namespace vmware_net
             Login_Panel.Visible = false;
             Vm_Panel.Visible = true;
         }
-
         protected void cmdProvision_Click(object sender, EventArgs e)
         {
             //
@@ -735,7 +738,6 @@ namespace vmware_net
             Vm_Panel.Visible = false;
             Results_Panel.Visible = true;
         }
-
         protected void cmdClose_Click(object sender, EventArgs e)
         {
             //
@@ -744,7 +746,6 @@ namespace vmware_net
             Results_Panel.Visible = false;
             Login_Panel.Visible = true;
         }
-
         protected void cboClusters_SelectedIndexChanged(object sender, EventArgs e)
         {
             //
