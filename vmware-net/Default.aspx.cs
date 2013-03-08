@@ -41,13 +41,18 @@ namespace vmware_net
             }
             catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
                 txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
                 Error_Panel.Visible = true;
-                vimClient = null;
-                return vimClient;
+                return null;
             }
             catch (Exception e)
             {
+                //
+                // Regular Exception occurred
+                //
                 txtErrors.Text = "A server fault of type " + e.GetType().Name + " with message '" + e.Message + "' occured while performing requested operation.";
                 Error_Panel.Visible = true;
                 vimClient = null;
@@ -58,24 +63,35 @@ namespace vmware_net
         {
             List<Datacenter> lstDatacenters = new List<Datacenter>();
             List<EntityViewBase> appDatacenters = new List<EntityViewBase>();
+            try
+            {
+                if (dcName == null)
+                {
+                    appDatacenters = vimClient.FindEntityViews(typeof(Datacenter), null, null, null);
+                }
+                else
+                {
+                    NameValueCollection dcFilter = new NameValueCollection();
+                    dcFilter.Add("name", dcName);
+                    appDatacenters = vimClient.FindEntityViews(typeof(Datacenter), null, dcFilter, null);
+                }
+                foreach (EntityViewBase appDatacenter in appDatacenters)
+                {
+                    Datacenter thisDatacenter = (Datacenter)appDatacenter;
+                    lstDatacenters.Add(thisDatacenter);
+                }
 
-            if (dcName == null)
-            {
-                appDatacenters = vimClient.FindEntityViews(typeof(Datacenter), null, null, null);
+                return lstDatacenters;
             }
-            else
+            catch (VimException ex)
             {
-                NameValueCollection dcFilter = new NameValueCollection();
-                dcFilter.Add("name", dcName);
-                appDatacenters = vimClient.FindEntityViews(typeof(Datacenter), null, dcFilter, null);
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
+                return null;
             }
-            foreach (EntityViewBase appDatacenter in appDatacenters)
-            {
-                Datacenter thisDatacenter = (Datacenter)appDatacenter;
-                lstDatacenters.Add(thisDatacenter);
-            }
-
-            return lstDatacenters;
         }
         protected List<Datastore> GetDataStore(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
         {
@@ -100,32 +116,55 @@ namespace vmware_net
             {
                 DcMoRef = null;
             }
-
-            List<EntityViewBase> appDatastores = vimClient.FindEntityViews(typeof(Datastore), DcMoRef, dsFilter, null);
-            if (appDatastores != null)
+            try
             {
-                foreach (EntityViewBase appDatastore in appDatastores)
+                List<EntityViewBase> appDatastores = vimClient.FindEntityViews(typeof(Datastore), DcMoRef, dsFilter, null);
+                if (appDatastores != null)
                 {
-                    Datastore thisDatastore = (Datastore)appDatastore;
-                    lstDatastores.Add(thisDatastore);
+                    foreach (EntityViewBase appDatastore in appDatastores)
+                    {
+                        Datastore thisDatastore = (Datastore)appDatastore;
+                        lstDatastores.Add(thisDatastore);
+                    }
+                    return lstDatastores;
                 }
-                return lstDatastores;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
         protected VmwareDistributedVirtualSwitch GetDvSwitch(VimClient vimClient, ManagedObjectReference dvportGroupSwitch)
         {
-            ViewBase appSwitch = vimClient.GetView(dvportGroupSwitch, null);
-            if (appSwitch != null)
+            try
             {
-                VmwareDistributedVirtualSwitch thisDvSwitch = (VmwareDistributedVirtualSwitch)appSwitch;
-                return thisDvSwitch;
+                ViewBase appSwitch = vimClient.GetView(dvportGroupSwitch, null);
+                if (appSwitch != null)
+                {
+                    VmwareDistributedVirtualSwitch thisDvSwitch = (VmwareDistributedVirtualSwitch)appSwitch;
+                    return thisDvSwitch;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -152,19 +191,30 @@ namespace vmware_net
             {
                 DcMoRef = null;
             }
-
-            List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(DistributedVirtualPortgroup), DcMoRef, pgFilter, null);
-            if (appPortGroups != null)
+            try
             {
-                foreach (EntityViewBase appPortGroup in appPortGroups)
+                List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(DistributedVirtualPortgroup), DcMoRef, pgFilter, null);
+                if (appPortGroups != null)
                 {
-                    DistributedVirtualPortgroup thisPortGroup = (DistributedVirtualPortgroup)appPortGroup;
-                    lstPortGroups.Add(thisPortGroup);
+                    foreach (EntityViewBase appPortGroup in appPortGroups)
+                    {
+                        DistributedVirtualPortgroup thisPortGroup = (DistributedVirtualPortgroup)appPortGroup;
+                        lstPortGroups.Add(thisPortGroup);
+                    }
+                    return lstPortGroups;
                 }
-                return lstPortGroups;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -191,19 +241,30 @@ namespace vmware_net
             {
                 DcMoRef = null;
             }
-
-            List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(Network), DcMoRef, pgFilter, null);
-            if (appPortGroups != null)
+            try
             {
-                foreach (EntityViewBase appPortGroup in appPortGroups)
+                List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(Network), DcMoRef, pgFilter, null);
+                if (appPortGroups != null)
                 {
-                    Network thisPortGroup = (Network)appPortGroup;
-                    lstPortGroups.Add(thisPortGroup);
+                    foreach (EntityViewBase appPortGroup in appPortGroups)
+                    {
+                        Network thisPortGroup = (Network)appPortGroup;
+                        lstPortGroups.Add(thisPortGroup);
+                    }
+                    return lstPortGroups;
                 }
-                return lstPortGroups;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -230,49 +291,84 @@ namespace vmware_net
             {
                 DcMoRef = null;
             }
-
-            List<EntityViewBase> appVirtualMachines = vimClient.FindEntityViews(typeof(VirtualMachine), DcMoRef, vmFilter, null);
-            if (appVirtualMachines != null)
+            try
             {
-                foreach (EntityViewBase appVirtualMachine in appVirtualMachines)
+                List<EntityViewBase> appVirtualMachines = vimClient.FindEntityViews(typeof(VirtualMachine), DcMoRef, vmFilter, null);
+                if (appVirtualMachines != null)
                 {
-                    VirtualMachine thisVirtualMachine = (VirtualMachine)appVirtualMachine;
-                    lstVirtualMachines.Add(thisVirtualMachine);
+                    foreach (EntityViewBase appVirtualMachine in appVirtualMachines)
+                    {
+                        VirtualMachine thisVirtualMachine = (VirtualMachine)appVirtualMachine;
+                        lstVirtualMachines.Add(thisVirtualMachine);
+                    }
+                    return lstVirtualMachines;
                 }
-                return lstVirtualMachines;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
         protected List<CustomizationSpecInfo> GetCustomizationSpecs(VimClient vimClient)
         {
-            List<CustomizationSpecInfo> lstSpecInfo = new List<CustomizationSpecInfo>();
-            CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
-            if (specManager != null)
+            try
             {
-                foreach (CustomizationSpecInfo specInfo in specManager.Info)
+                List<CustomizationSpecInfo> lstSpecInfo = new List<CustomizationSpecInfo>();
+                CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
+                if (specManager != null)
                 {
-                    lstSpecInfo.Add(specInfo);
+                    foreach (CustomizationSpecInfo specInfo in specManager.Info)
+                    {
+                        lstSpecInfo.Add(specInfo);
+                    }
+                    return lstSpecInfo;
                 }
-                return lstSpecInfo;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
         protected CustomizationSpecItem GetCustomizationSpecItem(VimClient vimClient, string specName = null)
         {
-            CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
-            if (specManager != null)
+            try
             {
-                CustomizationSpecItem itmCustomizationSpecItem = specManager.GetCustomizationSpec(specName);
-                return itmCustomizationSpecItem;
+                CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
+                if (specManager != null)
+                {
+                    CustomizationSpecItem itmCustomizationSpecItem = specManager.GetCustomizationSpec(specName);
+                    return itmCustomizationSpecItem;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -280,28 +376,39 @@ namespace vmware_net
         {
             List<ClusterComputeResource> lstClusters = new List<ClusterComputeResource>();
             List<EntityViewBase> appClusters = new List<EntityViewBase>();
-
-            if (clusterName == null)
+            try
             {
-                appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, null, null);
-            }
-            else
-            {
-                NameValueCollection clusterFilter = new NameValueCollection();
-                clusterFilter.Add("name", clusterName);
-                appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, clusterFilter, null);
-            }
-            if (appClusters != null)
-            {
-                foreach (EntityViewBase appCluster in appClusters)
+                if (clusterName == null)
                 {
-                    ClusterComputeResource thisCluster = (ClusterComputeResource)appCluster;
-                    lstClusters.Add(thisCluster);
+                    appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, null, null);
                 }
-                return lstClusters;
+                else
+                {
+                    NameValueCollection clusterFilter = new NameValueCollection();
+                    clusterFilter.Add("name", clusterName);
+                    appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, clusterFilter, null);
+                }
+                if (appClusters != null)
+                {
+                    foreach (EntityViewBase appCluster in appClusters)
+                    {
+                        ClusterComputeResource thisCluster = (ClusterComputeResource)appCluster;
+                        lstClusters.Add(thisCluster);
+                    }
+                    return lstClusters;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -309,28 +416,40 @@ namespace vmware_net
         {
             List<HostSystem> lstHosts = new List<HostSystem>();
             List<EntityViewBase> appHosts = new List<EntityViewBase>();
-            if (hostParent == null)
+            try
             {
-                appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, null, null);
-            }
-            else
-            {
-                NameValueCollection hostFilter = new NameValueCollection();
-                hostFilter.Add("parent", hostParent);
-
-                appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, hostFilter, null);
-            }
-            if (appHosts != null)
-            {
-                foreach (EntityViewBase appHost in appHosts)
+                if (hostParent == null)
                 {
-                    HostSystem thisHost = (HostSystem)appHost;
-                    lstHosts.Add(thisHost);
+                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, null, null);
                 }
-                return lstHosts;
+                else
+                {
+                    NameValueCollection hostFilter = new NameValueCollection();
+                    hostFilter.Add("parent", hostParent);
+
+                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, hostFilter, null);
+                }
+                if (appHosts != null)
+                {
+                    foreach (EntityViewBase appHost in appHosts)
+                    {
+                        HostSystem thisHost = (HostSystem)appHost;
+                        lstHosts.Add(thisHost);
+                    }
+                    return lstHosts;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -339,19 +458,30 @@ namespace vmware_net
             List<Datacenter> lstDataCenters = new List<Datacenter>();
             NameValueCollection parentFilter = new NameValueCollection();
             parentFilter.Add("hostFolder", clusterParent);
-
-            List<EntityViewBase> arrDataCenters = vimClient.FindEntityViews(typeof(Datacenter), null, parentFilter, null);
-            if (arrDataCenters != null)
+            try
             {
-                foreach (EntityViewBase arrDatacenter in arrDataCenters)
+                List<EntityViewBase> arrDataCenters = vimClient.FindEntityViews(typeof(Datacenter), null, parentFilter, null);
+                if (arrDataCenters != null)
                 {
-                    Datacenter thisDatacenter = (Datacenter)arrDatacenter;
-                    lstDataCenters.Add(thisDatacenter);
+                    foreach (EntityViewBase arrDatacenter in arrDataCenters)
+                    {
+                        Datacenter thisDatacenter = (Datacenter)arrDatacenter;
+                        lstDataCenters.Add(thisDatacenter);
+                    }
+                    return lstDataCenters;
                 }
-                return lstDataCenters;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -360,19 +490,30 @@ namespace vmware_net
             List<ResourcePool> lstResPools = new List<ResourcePool>();
             NameValueCollection clusterFilter = new NameValueCollection();
             clusterFilter.Add("parent", ClusterMoRefVal);
-
-            List<EntityViewBase> arrResPools = vimClient.FindEntityViews(typeof(ResourcePool), null, clusterFilter, null);
-            if (arrResPools != null)
+            try
             {
-                foreach (EntityViewBase arrResPool in arrResPools)
+                List<EntityViewBase> arrResPools = vimClient.FindEntityViews(typeof(ResourcePool), null, clusterFilter, null);
+                if (arrResPools != null)
                 {
-                    ResourcePool thisResPool = (ResourcePool)arrResPool;
-                    lstResPools.Add(thisResPool);
+                    foreach (EntityViewBase arrResPool in arrResPools)
+                    {
+                        ResourcePool thisResPool = (ResourcePool)arrResPool;
+                        lstResPools.Add(thisResPool);
+                    }
+                    return lstResPools;
                 }
-                return lstResPools;
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (VimException ex)
             {
+                //
+                // VMware Exception occurred
+                //
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
                 return null;
             }
         }
@@ -895,7 +1036,6 @@ namespace vmware_net
             //
             vimClient.Disconnect();
         }
-
         protected void cmdReturn_Click(object sender, EventArgs e)
         {
             txtErrors.Text = "";
