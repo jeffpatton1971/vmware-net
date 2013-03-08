@@ -857,6 +857,11 @@ namespace vmware_net
                 return;
             }
             //
+            // Need to parse the value of the dropdown
+            //
+            char[] splitChar = { '.' };
+            string[] specType = cboCustomizations.SelectedValue.Split(splitChar);
+            //
             // Get a list of hosts in the selected cluster
             //
             List<HostSystem> lstHosts = GetHosts(vimClient, cboClusters.SelectedValue);
@@ -870,6 +875,13 @@ namespace vmware_net
             //
             List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, cboSourceVms.SelectedItem.Text);
             VirtualMachine itmVirtualMachine = lstVirtualMachines[0];
+            if ((specType[specType.GetUpperBound(0)]).Contains(itmVirtualMachine.Guest.GuestFamily) == false)
+            {
+                vimClient.Disconnect();
+                txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
+                Error_Panel.Visible = true;
+                return;
+            }
             txtResults.Text += "Source : " + itmVirtualMachine.Name + "\r\n";
             //
             // Connect to the selected datastore
@@ -908,11 +920,6 @@ namespace vmware_net
             // Add selected CloneSpec customizations to this CloneSpec
             //
             mySpec.Customization = itmSpecItem.Spec;
-            //
-            // Need to parse the value of the dropdown
-            //
-            char[] splitChar = { '.' };
-            string[] specType = cboCustomizations.SelectedValue.Split(splitChar);
             //
             // Handle hostname for either windows or linux
             //
