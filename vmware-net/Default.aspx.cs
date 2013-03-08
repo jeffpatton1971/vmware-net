@@ -834,6 +834,17 @@ namespace vmware_net
                 return;
             }
             //
+            // This does some basic checking on a subnet
+            //
+            IPAddress theMask;
+            bool mskResult = IPAddress.TryParse(txtSubnet.Text, out theMask);
+            if (mskResult != true)
+            {
+                txtErrors.Text = "Please enter a valid Subnet Mask.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
             // Has a valid IP been entered for the gateway?
             //
             IPAddress theGateway;
