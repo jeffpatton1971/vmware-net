@@ -485,14 +485,27 @@ namespace vmware_net
 
         protected void cmdProvision_Click(object sender, EventArgs e)
         {
+            //
+            // Ready to provision
+            //
+            //
+            // Need a random number to pick a random virtual host to place the new vm on
+            //
             Random rand = new Random();
-
+            //
+            // Validate user entries
+            //
+            //
+            // Do we have a value for the target vm?
+            //
             if (txtTargetVm.Text == null || txtTargetVm.Text == "")
             {
                 txtResults.Text = "Please enter a name for the virtual machine.";
                 return;
             }
-
+            //
+            // Has a valid IP address been entered?
+            //
             IPAddress theIp;
             bool ipResult = IPAddress.TryParse(txtIpAddress.Text, out theIp);
             if (ipResult != true)
@@ -500,7 +513,9 @@ namespace vmware_net
                 txtResults.Text = "Please enter a valid IP Address.";
                 return;
             }
-
+            //
+            // Has a valid IP been entered for the gateway?
+            //
             IPAddress theGateway;
             bool gwResult = IPAddress.TryParse(txtGateway.Text, out theGateway);
             if (gwResult != true)
@@ -508,11 +523,9 @@ namespace vmware_net
                 txtResults.Text = "Please entera valid IP Address for the default gateway.";
                 return;
             }
-
             //
-            // Check for name conflict
+            // Does a vm by this name already exist?
             //
-
             VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             List<VirtualMachine> chkVirtualMachines = GetVirtualMachines(vimClient, null, txtTargetVm.Text);
             if (chkVirtualMachines != null)
@@ -524,94 +537,70 @@ namespace vmware_net
             //
             // Get a list of hosts in the selected cluster
             //
-
             List<HostSystem> lstHosts = GetHosts(vimClient, cboClusters.SelectedValue);
-
             //
             // Randomly pick host
             //
-
             HostSystem selectedHost = lstHosts[rand.Next(0, lstHosts.Count)];
             txtResults.Text = "Host : " + selectedHost.Name + "\r\n";
-
             //
             // Connect to selected vm to clone
             //
-
             List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, cboSourceVms.SelectedItem.Text);
             VirtualMachine itmVirtualMachine = lstVirtualMachines[0];
             txtResults.Text += "Source : " + itmVirtualMachine.Name + "\r\n";
-
             //
             // Connect to the selected datastore
             //
-
             List<Datastore> lstDatastores = GetDataStore(vimClient, null, cboDatastores.SelectedItem.Text);
             Datastore itmDatastore = lstDatastores[0];
             txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
-
             //
             // Connect to portgroup
             //
-
             List<DistributedVirtualPortgroup> lstDvPortGroups = GetDVPortGroups(vimClient, null, cboPortGroups.SelectedItem.Text);
             DistributedVirtualPortgroup itmDvPortGroup = lstDvPortGroups[0];
             txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
-
             //
             // Connect to the customizationspec
             //
-
             CustomizationSpecItem itmSpecItem = GetCustomizationSpecItem(vimClient, cboCustomizations.SelectedItem.Text);
             txtResults.Text += "Spec : " + cboCustomizations.SelectedItem.Text + "\r\n";
-
             //
             // Create a new VirtualMachineCloneSpec
             //
-
             VirtualMachineCloneSpec mySpec = new VirtualMachineCloneSpec();
             mySpec.Location = new VirtualMachineRelocateSpec();
             mySpec.Location.Datastore = itmDatastore.MoRef;
             mySpec.Location.Host = selectedHost.MoRef;
-
             //
             // Get resource pool for selected cluster
             //
-
             List<ResourcePool> lstResPools = GetResPools(vimClient, cboClusters.SelectedValue);
             ResourcePool itmResPool = lstResPools[0];
-
             //
             // Assign resource pool to specitem
             //
-
             mySpec.Location.Pool = itmResPool.MoRef;
-
             //
             // Add selected CloneSpec customizations to this CloneSpec
             //
-
             mySpec.Customization = itmSpecItem.Spec;
-
             //
             // Handle hostname for either windows or linux
             //
-
             if (cboCustomizations.SelectedValue == "Windows")
             {
                 //
                 // Create a windows sysprep object
                 //
-
                 CustomizationSysprep winIdent = (CustomizationSysprep)itmSpecItem.Spec.Identity;
                 CustomizationFixedName hostname = new CustomizationFixedName();
                 hostname.Name = txtTargetVm.Text;
                 winIdent.UserData.ComputerName = hostname;
-
                 //
                 // Store identity in this CloneSpec
                 //
-
                 mySpec.Customization.Identity = winIdent;
             }
             if (cboCustomizations.SelectedValue == "Linux")
@@ -619,166 +608,126 @@ namespace vmware_net
                 //
                 // Create a Linux "sysprep" object
                 //
-
                 CustomizationLinuxPrep linIdent = (CustomizationLinuxPrep)itmSpecItem.Spec.Identity;
                 CustomizationFixedName hostname = new CustomizationFixedName();
                 hostname.Name = txtTargetVm.Text;
                 linIdent.HostName = hostname;
-
                 //
                 // Store identity in this CloneSpec
                 //
-
                 mySpec.Customization.Identity = linIdent;
             }
-
             //
             // Create a new ConfigSpec
             //
-
             mySpec.Config = new VirtualMachineConfigSpec();
-
             //
             // Set number of CPU's
             //
-
             int numCpus = new int();
             numCpus = Convert.ToInt16(cboCpus.SelectedValue);
             mySpec.Config.NumCPUs = numCpus;
             txtResults.Text += "CPU : " + numCpus + "\r\n";
-
             //
             // Set amount of RAM
             //
-
             long memoryMb = new long();
             memoryMb = (long)(Convert.ToInt16(cboRam.SelectedValue) * 1024);
             mySpec.Config.MemoryMB = memoryMb;
             txtResults.Text += "Ram : " + memoryMb + "\r\n";
-
             //
             // Only handle the first network card
             //
-
             mySpec.Customization.NicSettingMap = new CustomizationAdapterMapping[1];
             mySpec.Customization.NicSettingMap[0] = new CustomizationAdapterMapping();
-
             //
             // Read in the DNS from web.config and assign
             //
-
             string[] ipDns = new string[1];
             ipDns[0] = WebConfigurationManager.AppSettings["dnsServer"].ToString();
             mySpec.Customization.GlobalIPSettings = new CustomizationGlobalIPSettings();
             mySpec.Customization.GlobalIPSettings.DnsServerList = ipDns;
             txtResults.Text += "DNS : " + ipDns[0] + "\r\n";
-
             //
             // Create a new networkDevice
             //
-
             VirtualDevice networkDevice = new VirtualDevice();
             foreach (VirtualDevice vDevice in itmVirtualMachine.Config.Hardware.Device)
             {
                 //
                 // get nic on vm
                 //
-
                 if (vDevice.DeviceInfo.Label.Contains("Network"))
                 {
                     networkDevice = vDevice;
                 }
             }
-
             //
             // Create a DeviceSpec
             //
-
             VirtualDeviceConfigSpec[] devSpec = new VirtualDeviceConfigSpec[0];
             mySpec.Config.DeviceChange = new VirtualDeviceConfigSpec[1];
             mySpec.Config.DeviceChange[0] = new VirtualDeviceConfigSpec();
             mySpec.Config.DeviceChange[0].Operation = VirtualDeviceConfigSpecOperation.edit;
             mySpec.Config.DeviceChange[0].Device = networkDevice;
-
             //
             // Define network settings for the new vm
             //
-
             //
             // Assign IP Address
             //
-
             CustomizationFixedIp ipAddress = new CustomizationFixedIp();
             ipAddress.IpAddress = txtIpAddress.Text;
             mySpec.Customization.NicSettingMap[0].Adapter = new CustomizationIPSettings();
             txtResults.Text += "IP : " + txtIpAddress.Text + "\r\n";
-
             //
             // Assign subnet mask
             //
-
             mySpec.Customization.NicSettingMap[0].Adapter.Ip = ipAddress;
             mySpec.Customization.NicSettingMap[0].Adapter.SubnetMask = txtSubnet.Text;
             txtResults.Text += "Subnet : " + txtSubnet.Text + "\r\n";
-
             //
             // Assign default gateway
             //
-
             string[] ipGateway = new string[1];
             ipGateway[0] = txtGateway.Text;
             mySpec.Customization.NicSettingMap[0].Adapter.Gateway = ipGateway;
             txtResults.Text += "Gateway : " + txtGateway.Text + "\r\n";
-
             //
             // Create network backing information
             //
-
             VirtualEthernetCardDistributedVirtualPortBackingInfo nicBack = new VirtualEthernetCardDistributedVirtualPortBackingInfo();
             nicBack.Port = new DistributedVirtualSwitchPortConnection();
-
             //
             // Connect to the virtual switch
             //
-
             VmwareDistributedVirtualSwitch dvSwitch = GetDvSwitch(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch);
-
             //
             // Assign the proper switch port
             //
-
             nicBack.Port.SwitchUuid = dvSwitch.Uuid;
-
             //
             // Connect the network card to proper port group
             //
-
             nicBack.Port.PortgroupKey = itmDvPortGroup.MoRef.Value;
             mySpec.Config.DeviceChange[0].Device.Backing = nicBack;
-
             //
             // Enable the network card at bootup
             //
-
             mySpec.Config.DeviceChange[0].Device.Connectable = new VirtualDeviceConnectInfo();
             mySpec.Config.DeviceChange[0].Device.Connectable.StartConnected = true;
             mySpec.Config.DeviceChange[0].Device.Connectable.AllowGuestControl = true;
             mySpec.Config.DeviceChange[0].Device.Connectable.Connected = true;
-
             //
             // Get the vmfolder from the datacenter
             //
-
             List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
             List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
-
             //
             // Perform the clone
             //
-
             itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, txtTargetVm.Text, mySpec);
-
             vimClient.Disconnect();
             //
             // Hide the vm controls and show the result box

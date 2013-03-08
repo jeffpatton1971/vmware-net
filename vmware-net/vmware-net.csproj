@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="vmware-net.Master" />
+    <None Include="Properties\PublishProfiles\Profile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
