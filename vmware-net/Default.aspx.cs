@@ -61,16 +61,25 @@ namespace vmware_net
         }
         protected List<Datacenter> GetDataCenter(VimClient vimClient, string dcName = null)
         {
+            //
+            // Get a list of datacenters
+            //
             List<Datacenter> lstDatacenters = new List<Datacenter>();
             List<EntityViewBase> appDatacenters = new List<EntityViewBase>();
             try
             {
                 if (dcName == null)
                 {
+                    //
+                    // Return all datacenters
+                    //
                     appDatacenters = vimClient.FindEntityViews(typeof(Datacenter), null, null, null);
                 }
                 else
                 {
+                    //
+                    // Return the named datacenter
+                    //
                     NameValueCollection dcFilter = new NameValueCollection();
                     dcFilter.Add("name", dcName);
                     appDatacenters = vimClient.FindEntityViews(typeof(Datacenter), null, dcFilter, null);
@@ -95,12 +104,18 @@ namespace vmware_net
         }
         protected List<Datastore> GetDataStore(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
         {
+            //
+            // Get a list of datastores from a specific datacenter
+            //
             List<Datastore> lstDatastores = new List<Datastore>();
             NameValueCollection dsFilter = new NameValueCollection();
             ManagedObjectReference DcMoRef = new ManagedObjectReference();
 
             if (dsName != null)
             {
+                //
+                // The name of a specific datastore
+                //
                 dsFilter.Add("name", dsName);
             }
             else
@@ -110,6 +125,9 @@ namespace vmware_net
 
             if (selectedDC != null)
             {
+                //
+                // A specific datacenter to get datastores from
+                //
                 DcMoRef = selectedDC.MoRef;
             }
             else
@@ -118,6 +136,9 @@ namespace vmware_net
             }
             try
             {
+                //
+                // if DcMoref and dsFilter are empty return all datastores
+                //
                 List<EntityViewBase> appDatastores = vimClient.FindEntityViews(typeof(Datastore), DcMoRef, dsFilter, null);
                 if (appDatastores != null)
                 {
@@ -145,8 +166,14 @@ namespace vmware_net
         }
         protected VmwareDistributedVirtualSwitch GetDvSwitch(VimClient vimClient, ManagedObjectReference dvportGroupSwitch)
         {
+            //
+            // Get a specific distributed switch
+            //
             try
             {
+                //
+                // Get the switch associated with the moref
+                //
                 ViewBase appSwitch = vimClient.GetView(dvportGroupSwitch, null);
                 if (appSwitch != null)
                 {
@@ -170,12 +197,18 @@ namespace vmware_net
         }
         protected List<DistributedVirtualPortgroup> GetDVPortGroups(VimClient vimClient, Datacenter selectedDC = null, string pgName = null)
         {
+            //
+            // Get a list of Distributed Portgroups
+            //
             List<DistributedVirtualPortgroup> lstPortGroups = new List<DistributedVirtualPortgroup>();
             NameValueCollection pgFilter = new NameValueCollection();
             ManagedObjectReference DcMoRef = new ManagedObjectReference();
 
             if (pgName != null)
             {
+                //
+                // A specific portgroup
+                //
                 pgFilter.Add("name", pgName);
             }
             else
@@ -185,6 +218,9 @@ namespace vmware_net
 
             if (selectedDC != null)
             {
+                //
+                // A specific datacenter
+                //
                 DcMoRef = selectedDC.MoRef;
             }
             else
@@ -193,6 +229,9 @@ namespace vmware_net
             }
             try
             {
+                //
+                // If DcMoref and pgFilter are null return all Portgroups, otherwise return selected Portgroup
+                //
                 List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(DistributedVirtualPortgroup), DcMoRef, pgFilter, null);
                 if (appPortGroups != null)
                 {
@@ -220,12 +259,18 @@ namespace vmware_net
         }
         protected List<Network> GetPortGroups(VimClient vimClient, Datacenter selectedDC = null, string pgName = null)
         {
+            //
+            // Get a list of Portgroups
+            //
             List<Network> lstPortGroups = new List<Network>();
             NameValueCollection pgFilter = new NameValueCollection();
             ManagedObjectReference DcMoRef = new ManagedObjectReference();
 
             if (pgName != null)
             {
+                //
+                // Name of a specific portgroup
+                //
                 pgFilter.Add("name", pgName);
             }
             else
@@ -235,6 +280,9 @@ namespace vmware_net
 
             if (selectedDC != null)
             {
+                //
+                // A specific datacenter
+                //
                 DcMoRef = selectedDC.MoRef;
             }
             else
@@ -243,6 +291,9 @@ namespace vmware_net
             }
             try
             {
+                //
+                // If DcMoRef and pgFilter are null return all portgroups, otherwise return the selected portgroup
+                //
                 List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(Network), DcMoRef, pgFilter, null);
                 if (appPortGroups != null)
                 {
@@ -578,6 +629,12 @@ namespace vmware_net
             // Uncomment the code below to store the sdk servername in the web.config
             //
             //txtSdkServer.Text = WebConfigurationManager.AppSettings["viServer"].ToString();
+            //
+            // Layout the error panel dimensions
+            //
+            Error_Panel.Style.Add("position", "absolute;top:20%;left:20%");
+            Error_Panel.Style.Add("height", "50%");
+            Error_Panel.Style.Add("width", "50%");
         }
         protected void cmdConnect_Click(object sender, EventArgs e)
         {
