@@ -818,7 +818,8 @@ namespace vmware_net
             //
             if (txtTargetVm.Text == null || txtTargetVm.Text == "")
             {
-                txtResults.Text = "Please enter a name for the virtual machine.";
+                txtErrors.Text = "Please enter a name for the virtual machine.";
+                Error_Panel.Visible = true;
                 return;
             }
             //
@@ -828,7 +829,8 @@ namespace vmware_net
             bool ipResult = IPAddress.TryParse(txtIpAddress.Text, out theIp);
             if (ipResult != true)
             {
-                txtResults.Text = "Please enter a valid IP Address.";
+                txtErrors.Text = "Please enter a valid IP Address.";
+                Error_Panel.Visible = true;
                 return;
             }
             //
@@ -838,7 +840,8 @@ namespace vmware_net
             bool gwResult = IPAddress.TryParse(txtGateway.Text, out theGateway);
             if (gwResult != true)
             {
-                txtResults.Text = "Please entera valid IP Address for the default gateway.";
+                txtErrors.Text = "Please entera valid IP Address for the default gateway.";
+                Error_Panel.Visible = true;
                 return;
             }
             //
@@ -849,7 +852,8 @@ namespace vmware_net
             if (chkVirtualMachines != null)
             {
                 vimClient.Disconnect();
-                txtResults.Text = "virtual machine " + txtTargetVm.Text + " already exists";
+                txtErrors.Text = "virtual machine " + txtTargetVm.Text + " already exists";
+                Error_Panel.Visible = true;
                 return;
             }
             //
@@ -905,9 +909,14 @@ namespace vmware_net
             //
             mySpec.Customization = itmSpecItem.Spec;
             //
+            // Need to parse the value of the dropdown
+            //
+            char[] splitChar = { '.' };
+            string[] specType = cboCustomizations.SelectedValue.Split(splitChar);
+            //
             // Handle hostname for either windows or linux
             //
-            if (cboCustomizations.SelectedValue == "Windows")
+            if (specType[specType.GetUpperBound(0)] == "Windows")
             {
                 //
                 // Create a windows sysprep object
@@ -921,7 +930,7 @@ namespace vmware_net
                 //
                 mySpec.Customization.Identity = winIdent;
             }
-            if (cboCustomizations.SelectedValue == "Linux")
+            if (specType[specType.GetUpperBound(0)] == "Linux")
             {
                 //
                 // Create a Linux "sysprep" object
