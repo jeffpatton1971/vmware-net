@@ -58,7 +58,11 @@ namespace vmware_net
             //
             // Check to see what that path is
             //
-            if (uriVServer.AbsolutePath != "/sdk")
+            if (uriVServer.AbsolutePath == "/")
+            {
+                viServer = viServer + "/sdk";
+            }
+            else if (uriVServer.AbsolutePath != "/sdk")
             {
                 //
                 // Some other path is listed
