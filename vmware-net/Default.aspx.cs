@@ -31,11 +31,28 @@ namespace vmware_net
             //
             // Connect over https to the /sdk page
             //
-            vimClient.Connect(viServer);
-            vimSession = vimClient.Login(viUser, viPassword);
-            vimServiceContent = vimClient.ServiceContent;
+            try
+            {
+                vimClient.Connect(viServer);
+                vimSession = vimClient.Login(viUser, viPassword);
+                vimServiceContent = vimClient.ServiceContent;
 
-            return vimClient;
+                return vimClient;
+            }
+            catch (VimException ex)
+            {
+                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
+                vimClient = null;
+                return vimClient;
+            }
+            catch (Exception e)
+            {
+                txtErrors.Text = "A server fault of type " + e.GetType().Name + " with message '" + e.Message + "' occured while performing requested operation.";
+                Error_Panel.Visible = true;
+                vimClient = null;
+                return vimClient;
+            }
         }
         protected List<Datacenter> GetDataCenter(VimClient vimClient, string dcName = null)
         {
@@ -437,6 +454,10 @@ namespace vmware_net
             // Establish a connection with the Vmware server
             //
             VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            if (vimClient == null)
+            {
+                return;
+            }
             //
             // Get a list of clones
             //
@@ -873,6 +894,12 @@ namespace vmware_net
             // Close the session with the server
             //
             vimClient.Disconnect();
+        }
+
+        protected void cmdReturn_Click(object sender, EventArgs e)
+        {
+            txtErrors.Text = "";
+            Error_Panel.Visible = false;
         }
     }
 }
