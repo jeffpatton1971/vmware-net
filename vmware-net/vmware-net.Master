@@ -13,6 +13,11 @@
         tbody tr:nth-child(even) td, tbody tr.even td {
             background-color: transparent;
         }
+        .vmn_label {
+            float:left;
+            padding-top:6px;
+            width:120px;
+        }
     </style>
     <!--[if lt IE 8]>
     <link rel="stylesheet" href="blueprint/ie.css" type="text/css" media="screen, projection" />
