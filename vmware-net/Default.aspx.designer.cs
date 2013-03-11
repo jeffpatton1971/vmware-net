@@ -49,15 +49,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblSdkServer;
         
         /// <summary>
-        /// txtSdkServer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtSdkServer;
-        
-        /// <summary>
         /// lblUsername control.
         /// </summary>
         /// <remarks>
@@ -67,15 +58,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblUsername;
         
         /// <summary>
-        /// txtUsername control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtUsername;
-        
-        /// <summary>
         /// lblPassword control.
         /// </summary>
         /// <remarks>
@@ -83,6 +65,24 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPassword;
+        
+        /// <summary>
+        /// txtSdkServer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtSdkServer;
+        
+        /// <summary>
+        /// txtUsername control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtUsername;
         
         /// <summary>
         /// txtPassword control.
@@ -130,15 +130,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblSourceVm;
         
         /// <summary>
-        /// cboSourceVms control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboSourceVms;
-        
-        /// <summary>
         /// lblTargetVm control.
         /// </summary>
         /// <remarks>
@@ -146,15 +137,6 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTargetVm;
-        
-        /// <summary>
-        /// txtTargetVm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtTargetVm;
         
         /// <summary>
         /// lblOsCustomization control.
@@ -166,15 +148,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblOsCustomization;
         
         /// <summary>
-        /// cboCustomizations control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboCustomizations;
-        
-        /// <summary>
         /// lblCluster control.
         /// </summary>
         /// <remarks>
@@ -182,15 +155,6 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCluster;
-        
-        /// <summary>
-        /// cboClusters control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboClusters;
         
         /// <summary>
         /// lblDatastore control.
@@ -202,15 +166,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblDatastore;
         
         /// <summary>
-        /// cboDatastores control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboDatastores;
-        
-        /// <summary>
         /// lblPortGroups control.
         /// </summary>
         /// <remarks>
@@ -218,15 +173,6 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPortGroups;
-        
-        /// <summary>
-        /// cboPortGroups control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboPortGroups;
         
         /// <summary>
         /// lblResourcePool control.
@@ -238,15 +184,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblResourcePool;
         
         /// <summary>
-        /// cboResourcePools control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboResourcePools;
-        
-        /// <summary>
         /// lblCpu control.
         /// </summary>
         /// <remarks>
@@ -254,15 +191,6 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCpu;
-        
-        /// <summary>
-        /// cboCpus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboCpus;
         
         /// <summary>
         /// lblRam control.
@@ -274,15 +202,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblRam;
         
         /// <summary>
-        /// cboRam control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboRam;
-        
-        /// <summary>
         /// lblIpAddress control.
         /// </summary>
         /// <remarks>
@@ -290,15 +209,6 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblIpAddress;
-        
-        /// <summary>
-        /// txtIpAddress control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtIpAddress;
         
         /// <summary>
         /// lblSubnet control.
@@ -310,15 +220,6 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Label lblSubnet;
         
         /// <summary>
-        /// txtSubnet control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtSubnet;
-        
-        /// <summary>
         /// lblGateway control.
         /// </summary>
         /// <remarks>
@@ -326,6 +227,105 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblGateway;
+        
+        /// <summary>
+        /// cboSourceVms control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboSourceVms;
+        
+        /// <summary>
+        /// txtTargetVm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtTargetVm;
+        
+        /// <summary>
+        /// cboCustomizations control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboCustomizations;
+        
+        /// <summary>
+        /// cboClusters control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboClusters;
+        
+        /// <summary>
+        /// cboDatastores control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboDatastores;
+        
+        /// <summary>
+        /// cboPortGroups control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboPortGroups;
+        
+        /// <summary>
+        /// cboResourcePools control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboResourcePools;
+        
+        /// <summary>
+        /// cboCpus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboCpus;
+        
+        /// <summary>
+        /// cboRam control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboRam;
+        
+        /// <summary>
+        /// txtIpAddress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtIpAddress;
+        
+        /// <summary>
+        /// txtSubnet control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtSubnet;
         
         /// <summary>
         /// txtGateway control.
