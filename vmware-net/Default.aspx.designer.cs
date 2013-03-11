@@ -355,6 +355,15 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Panel Results_Panel;
         
         /// <summary>
+        /// lblResultsLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblResultsLabel;
+        
+        /// <summary>
         /// txtResults control.
         /// </summary>
         /// <remarks>
@@ -380,6 +389,15 @@ namespace vmware_net {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel Error_Panel;
+        
+        /// <summary>
+        /// lblErrorPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblErrorPanel;
         
         /// <summary>
         /// txtErrors control.

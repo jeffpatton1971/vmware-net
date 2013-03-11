@@ -686,6 +686,12 @@ namespace vmware_net
             Error_Panel.Style.Add("position", "absolute;top:20%;left:20%");
             Error_Panel.Style.Add("height", "50%");
             Error_Panel.Style.Add("width", "50%");
+            //
+            // Layout the results panel
+            //
+            Results_Panel.Style.Add("position", "absolute;top:20%;left:20%");
+            Results_Panel.Style.Add("height", "50%");
+            Results_Panel.Style.Add("width", "50%");
         }
         protected void cmdConnect_Click(object sender, EventArgs e)
         {
