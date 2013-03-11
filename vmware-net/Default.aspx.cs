@@ -687,15 +687,15 @@ namespace vmware_net
             //
             // Layout the error panel dimensions
             //
-            Error_Panel.Style.Add("position", "absolute;top:20%;left:20%");
-            Error_Panel.Style.Add("height", "50%");
-            Error_Panel.Style.Add("width", "50%");
+            Error_Panel.Style.Add("position", "absolute;right:auto;left:auto");
+            Error_Panel.Style.Add("height", "100%");
+            Error_Panel.Style.Add("width", "960px");
             //
             // Layout the results panel
             //
-            Results_Panel.Style.Add("position", "absolute;top:20%;left:20%");
-            Results_Panel.Style.Add("height", "50%");
-            Results_Panel.Style.Add("width", "50%");
+            Results_Panel.Style.Add("position", "absolute;right:auto;left:auto");
+            Results_Panel.Style.Add("height", "100%");
+            Results_Panel.Style.Add("width", "960px");
         }
         protected void cmdConnect_Click(object sender, EventArgs e)
         {
