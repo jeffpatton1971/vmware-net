@@ -16,7 +16,11 @@ namespace vmware_net
     {
         public static string sUsername;
         public static string sPassword;
+        //
+        // Replace this line with the line below to populate server from web.config
+        //
         public static string sViServer;
+        //public static string sViServer = WebConfigurationManager.AppSettings["viServer"].ToString();
     }
     public partial class Default : System.Web.UI.Page
     {
@@ -704,7 +708,16 @@ namespace vmware_net
             //
             // Comment or remove the code below if you populate the sdk server from web.config
             //
-            Globals.sViServer = ValidateServer(txtSdkServer.Text);
+            if (txtSdkServer.Text == null || txtSdkServer.Text == "")
+            {
+                txtErrors.Text = "Please enter a server name or IP address.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            else
+            {
+                Globals.sViServer = ValidateServer(txtSdkServer.Text);
+            }
             //
             // Establish a connection with the Vmware server
             //
