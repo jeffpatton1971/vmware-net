@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="vmware_net.Default" MasterPageFile="vmware-net.Master" %>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Form" ContentPlaceHolderID="vmware_net_content" runat="server">
     <div id="blueprint_div" class="container" runat="server">
         <asp:Panel ID="Login_Panel" runat="server">
             <div id="login_panel_div">
