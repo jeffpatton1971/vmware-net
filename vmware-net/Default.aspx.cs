@@ -908,10 +908,49 @@ namespace vmware_net
             //
             // Make sure the spec file type matches the guest os
             //
-            if ((specType[specType.GetUpperBound(0)]).Contains(itmVirtualMachine.Guest.GuestFamily) == false)
+            //
+            // The commented code could be used to poweron a vm, check it's guestfamily and then turn it off.
+            //
+            //string GuestFamily = null;
+            //if (itmVirtualMachine.Runtime.PowerState == VirtualMachinePowerState.poweredOff)
+            //{
+            //    //
+            //    // We can power on the vm to get the guestfamily property
+            //    //
+            //    itmVirtualMachine.PowerOnVM(null);
+            //    //
+            //    // Set the GuestFamily var
+            //    //
+            //    while (itmVirtualMachine.Guest.GuestFamily == null)
+            //    {
+            //        //
+            //        // Need to grab the current guest status from the vm
+            //        //
+            //        itmVirtualMachine.Reload();
+            //        GuestFamily = itmVirtualMachine.Guest.GuestFamily;
+            //    }
+            //    //
+            //    // Turn the VM back off
+            //    //
+            //    itmVirtualMachine.PowerOffVM();
+            //}
+            if (itmVirtualMachine.Guest.GuestFamily != null)
             {
+                if ((specType[specType.GetUpperBound(0)]).Contains(itmVirtualMachine.Guest.GuestFamily) == false)
+                {
+                    vimClient.Disconnect();
+                    txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
+                    Error_Panel.Visible = true;
+                    return;
+                }
+            }
+            else
+            {
+                //
+                // Sometimes the GuestFamily property isn't populated
+                //
                 vimClient.Disconnect();
-                txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
+                txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
                 Error_Panel.Visible = true;
                 return;
             }

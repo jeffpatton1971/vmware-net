@@ -89,7 +89,7 @@
                 <div class="span-6 last">&nbsp;</div>
             </div>
         </asp:Panel>
-        <asp:Panel ID="Error_Panel" runat="server" Visible="False" BackColor="#CCCCCC">
+        <asp:Panel ID="Error_Panel" runat="server" Visible="False" BackColor="White">
             <div id="error_panel_div">
                 <div id="ep_Panel_Label" class="span-24 last" style="text-align: center">
                     <asp:Label ID="lblErrorPanel" runat="server" Text="Error Messages" Font-Bold="True"></asp:Label>
@@ -97,7 +97,7 @@
                 <br />
                 <div class="span-6">&nbsp;</div>
                 <div id="ep_control" class="span-12">
-                    <asp:TextBox ID="txtErrors" runat="server" TextMode="MultiLine" ForeColor="Red" Font-Bold="True" BorderStyle="None" ReadOnly="True" BackColor="#CCCCCC" Width="100%"></asp:TextBox><br />
+                    <asp:TextBox ID="txtErrors" runat="server" TextMode="MultiLine" ForeColor="Red" Font-Bold="True" BorderStyle="None" ReadOnly="True" BackColor="White" Width="100%"></asp:TextBox><br />
                     <asp:Button ID="cmdReturn" runat="server" Text="Return" OnClick="cmdReturn_Click" />
                 </div>
                 <div class="span-6 last">&nbsp;</div>
