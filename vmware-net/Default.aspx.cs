@@ -936,7 +936,7 @@ namespace vmware_net
             //}
             if (itmVirtualMachine.Guest.GuestFamily != null)
             {
-                if ((specType[specType.GetUpperBound(0)]).Contains(itmVirtualMachine.Guest.GuestFamily) == false)
+                if ((itmVirtualMachine.Guest.GuestFamily).Contains(specType[specType.GetUpperBound(0)]) == false)
                 {
                     vimClient.Disconnect();
                     txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
