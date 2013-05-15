@@ -1019,6 +1019,10 @@ namespace vmware_net
                 hostname.Name = txtTargetVm.Text;
                 linIdent.HostName = hostname;
                 //
+                // Uncomment the line below to add a suffix to linux vm's
+                //
+                // linIdent.Domain = WebConfigurationManager.AppSettings["dnsSuffix"].ToString();
+                //
                 // Store identity in this CloneSpec
                 //
                 mySpec.Customization.Identity = linIdent;
