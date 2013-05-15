@@ -892,6 +892,12 @@ namespace vmware_net
             char[] splitChar = { '.' };
             string[] specType = cboCustomizations.SelectedValue.Split(splitChar);
             //
+            // Connect to selected datacenter
+            //
+            List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            Datacenter itmDatacenter = lstDatacenters[0];
+            //
             // Get a list of hosts in the selected cluster
             //
             List<HostSystem> lstHosts = GetHosts(vimClient, cboClusters.SelectedValue);
@@ -964,7 +970,7 @@ namespace vmware_net
             //
             // Connect to portgroup
             //
-            List<DistributedVirtualPortgroup> lstDvPortGroups = GetDVPortGroups(vimClient, null, cboPortGroups.SelectedItem.Text);
+            List<DistributedVirtualPortgroup> lstDvPortGroups = GetDVPortGroups(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
             DistributedVirtualPortgroup itmDvPortGroup = lstDvPortGroups[0];
             txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
             //
@@ -1131,9 +1137,6 @@ namespace vmware_net
             //
             // Get the vmfolder from the datacenter
             //
-            List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
-            Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Perform the clone
             //
