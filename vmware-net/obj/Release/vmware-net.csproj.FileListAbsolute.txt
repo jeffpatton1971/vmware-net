@@ -3,3 +3,8 @@ C:\git\vmware-net\vmware-net\bin\vmware-net.pdb
 C:\git\vmware-net\vmware-net\obj\Release\vmware-net.dll
 C:\git\vmware-net\vmware-net\obj\Release\vmware-net.pdb
 C:\git\vmware-net\vmware-net\obj\Release\vmware-net.csprojResolveAssemblyReference.cache
+C:\git-repos\vmware-net\vmware-net\bin\vmware-net.dll
+C:\git-repos\vmware-net\vmware-net\bin\vmware-net.pdb
+C:\git-repos\vmware-net\vmware-net\obj\Release\vmware-net.csprojResolveAssemblyReference.cache
+C:\git-repos\vmware-net\vmware-net\obj\Release\vmware-net.dll
+C:\git-repos\vmware-net\vmware-net\obj\Release\vmware-net.pdb
