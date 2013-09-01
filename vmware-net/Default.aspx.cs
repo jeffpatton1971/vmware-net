@@ -773,7 +773,26 @@ namespace vmware_net
             //
             // Get a list of datastores
             //
-            List<Datastore> lstDatastores = GetDataStore(vimClient, itmDatacenter);
+            List<ClusterComputeResource> SelectedCluster = GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            ClusterComputeResource myCluster = SelectedCluster[0];
+            //
+            // Create a list of Datastores to populate later
+            //
+            List<Datastore> lstDatastores = new List<Datastore>();
+            //
+            // The cluster object already contains a list of datastore morefs
+            // grab this list of morefs and use getview to grab the object
+            // and add it to the datastore list.
+            //
+            foreach (ManagedObjectReference itmDs in myCluster.Datastore)
+            {
+                ViewBase thisDsView = vimClient.GetView(itmDs, null);
+                Datastore thisDatastore = (Datastore)thisDsView;
+                lstDatastores.Add(thisDatastore);
+            }
+            //
+            // Sort the list by the freespace property in descending order
+            //
             lstDatastores = lstDatastores.OrderByDescending(thisStore => thisStore.Info.FreeSpace).ToList();
             foreach (Datastore itmDatastore in lstDatastores)
             {
@@ -1178,12 +1197,30 @@ namespace vmware_net
             // Need to get at the Datacenter for the selected cluster
             //
             List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            ClusterComputeResource itmCluster = lstClusters[0];
             List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Update datastore list
             //
-            List<Datastore> lstDatastores = GetDataStore(vimClient, itmDatacenter);
+            //
+            // Create a list of Datastores to populate later
+            //
+            List<Datastore> lstDatastores = new List<Datastore>();
+            //
+            // The cluster object already contains a list of datastore morefs
+            // grab this list of morefs and use getview to grab the object
+            // and add it to the datastore list.
+            //
+            foreach (ManagedObjectReference itmDs in itmCluster.Datastore)
+            {
+                ViewBase thisDsView = vimClient.GetView(itmDs, null);
+                Datastore thisDatastore = (Datastore)thisDsView;
+                lstDatastores.Add(thisDatastore);
+            }
+            //
+            // Sort the list by the freespace property in descending order
+            //
             lstDatastores = lstDatastores.OrderByDescending(thisStore => thisStore.Info.FreeSpace).ToList();
             foreach (Datastore itmDatastore in lstDatastores)
             {
