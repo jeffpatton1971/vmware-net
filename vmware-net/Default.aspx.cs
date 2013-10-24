@@ -959,26 +959,29 @@ namespace vmware_net
             //    //
             //    itmVirtualMachine.PowerOffVM();
             //}
-            if (itmVirtualMachine.Guest.GuestFamily != null)
-            {
-                if ((itmVirtualMachine.Guest.GuestFamily).Contains(specType[specType.GetUpperBound(0)]) == false)
-                {
-                    vimClient.Disconnect();
-                    txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-            }
-            else
-            {
-                //
-                // Sometimes the GuestFamily property isn't populated
-                //
-                vimClient.Disconnect();
-                txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
-                Error_Panel.Visible = true;
-                return;
-            }
+            //
+            // Removed this check to troubleshoot cloning from a template. 10/24/2013
+            //
+            //if (itmVirtualMachine.Guest.GuestFamily != null)
+            //{
+            //    if ((itmVirtualMachine.Guest.GuestFamily).Contains(specType[specType.GetUpperBound(0)]) == false)
+            //    {
+            //        vimClient.Disconnect();
+            //        txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
+            //        Error_Panel.Visible = true;
+            //        return;
+            //    }
+            //}
+            //else
+            //{
+            //    //
+            //    // Sometimes the GuestFamily property isn't populated
+            //    //
+            //    vimClient.Disconnect();
+            //    txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
+            //    Error_Panel.Visible = true;
+            //    return;
+            //}
             txtResults.Text += "Source : " + itmVirtualMachine.Name + "\r\n";
             //
             // Connect to the selected datastore
@@ -1079,7 +1082,7 @@ namespace vmware_net
             // Read in the DNS from web.config and assign
             //
             string[] ipDns = new string[1];
-            ipDns[0] = WebConfigurationManager.AppSettings["dnsServer"].ToString();
+            ipDns[0] = txtDnsServer.Text;
             mySpec.Customization.GlobalIPSettings = new CustomizationGlobalIPSettings();
             mySpec.Customization.GlobalIPSettings.DnsServerList = ipDns;
             txtResults.Text += "DNS : " + ipDns[0] + "\r\n";

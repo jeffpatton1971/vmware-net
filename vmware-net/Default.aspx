@@ -69,6 +69,8 @@
                     <asp:TextBox ID="txtSubnet" runat="server"></asp:TextBox><br />
                     <div class="vmn_label">Gateway</div>
                     <asp:TextBox ID="txtGateway" runat="server"></asp:TextBox><br />
+                    <div class="vmn_label">Dns</div>
+                    <asp:TextBox ID="txtDnsServer" runat="server"></asp:TextBox><br />
                     <div class="vmn_label">&nbsp;</div>
                     <asp:Button ID="cmdProvision" runat="server" Text="Provision" OnClick="cmdProvision_Click" />
                 </div>
