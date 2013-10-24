@@ -1,7 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="vmware_net.Default" MasterPageFile="vmware-net.Master" %>
 
 <asp:Content ID="Form" ContentPlaceHolderID="vmware_net_content" runat="server">
-    <div id="blueprint_div" class="container" runat="server">
+    <div id="blueprint_div" class="container showgrid" runat="server">
         <asp:Panel ID="Login_Panel" runat="server">
             <div id="login_panel_div">
                 <div id="lp_Panel_Label" class="span-24 last" style="text-align: center">
@@ -37,44 +37,44 @@
                 </div>
                 <div id="vm_spacer-left" class="span-6">&nbsp;</div>
                 <div id="vm_control" class="span-12">
-                    <div class="vmn_label">Source VM</div>
-                    <asp:DropDownList ID="cboSourceVms" runat="server"></asp:DropDownList><br />
-                    <div class="vmn_label">Template</div>
-                    <asp:CheckBox ID="chkTemplate" runat="server" Checked="True" />
-                    <div class="vmn_label">Target VM</div>
-                    <asp:TextBox ID="txtTargetVm" runat="server"></asp:TextBox><br />
-                    <div class="vmn_label">OS Customization</div>
-                    <asp:DropDownList ID="cboCustomizations" runat="server"></asp:DropDownList><br />
-                    <div class="vmn_label">Cluster</div>
-                    <asp:DropDownList ID="cboClusters" runat="server" AutoPostBack="True" OnSelectedIndexChanged="cboClusters_SelectedIndexChanged"></asp:DropDownList><br />
-                    <div class="vmn_label">Datastore</div>
-                    <asp:DropDownList ID="cboDatastores" runat="server"></asp:DropDownList><br />
-                    <div class="vmn_label">Port Group</div>
-                    <asp:DropDownList ID="cboPortGroups" runat="server"></asp:DropDownList><br />
-                    <div class="vmn_label">Resource Pool</div>
-                    <asp:DropDownList ID="cboResourcePools" runat="server"></asp:DropDownList><br />
-                    <div class="vmn_label">CPU</div>
-                    <asp:DropDownList ID="cboCpus" runat="server">
+                    <div class="vmn_label span-3">Source VM</div>
+                    <div><asp:DropDownList ID="cboSourceVms" runat="server"></asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">Template</div>
+                    <div><asp:CheckBox ID="chkTemplate" runat="server" Checked="True" /></div><br />
+                    <div class="vmn_label span-3">Target VM</div>
+                    <div><asp:TextBox ID="txtTargetVm" runat="server"></asp:TextBox></div><br />
+                    <div class="vmn_label span-3">OS Customization</div>
+                    <div><asp:DropDownList ID="cboCustomizations" runat="server"></asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">Cluster</div>
+                    <div><asp:DropDownList ID="cboClusters" runat="server" AutoPostBack="True" OnSelectedIndexChanged="cboClusters_SelectedIndexChanged"></asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">Datastore</div>
+                    <div><asp:DropDownList ID="cboDatastores" runat="server"></asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">Port Group</div>
+                    <div><asp:DropDownList ID="cboPortGroups" runat="server"></asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">Resource Pool</div>
+                    <div><asp:DropDownList ID="cboResourcePools" runat="server"></asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">CPU</div>
+                    <div><asp:DropDownList ID="cboCpus" runat="server">
                         <asp:ListItem>1</asp:ListItem>
                         <asp:ListItem>2</asp:ListItem>
                         <asp:ListItem>4</asp:ListItem>
-                    </asp:DropDownList><br />
-                    <div class="vmn_label">RAM</div>
-                    <asp:DropDownList ID="cboRam" runat="server">
+                    </asp:DropDownList><br /></div>
+                    <div class="vmn_label span-3">RAM</div>
+                    <div><asp:DropDownList ID="cboRam" runat="server">
                         <asp:ListItem>2</asp:ListItem>
                         <asp:ListItem>4</asp:ListItem>
                         <asp:ListItem>8</asp:ListItem>
-                    </asp:DropDownList><br />
-                    <div class="vmn_label">IP Address</div>
-                    <asp:TextBox ID="txtIpAddress" runat="server"></asp:TextBox><br />
-                    <div class="vmn_label">Subnet</div>
-                    <asp:TextBox ID="txtSubnet" runat="server"></asp:TextBox><br />
-                    <div class="vmn_label">Gateway</div>
-                    <asp:TextBox ID="txtGateway" runat="server"></asp:TextBox><br />
-                    <div class="vmn_label">Dns</div>
-                    <asp:TextBox ID="txtDnsServer" runat="server"></asp:TextBox><br />
-                    <div class="vmn_label">&nbsp;</div>
-                    <asp:Button ID="cmdProvision" runat="server" Text="Provision" OnClick="cmdProvision_Click" />
+                    </asp:DropDownList></div><br />
+                    <div class="vmn_label span-3">IP Address</div>
+                    <div><asp:TextBox ID="txtIpAddress" runat="server"></asp:TextBox></div><br />
+                    <div class="vmn_label span-3">Subnet</div>
+                    <div><asp:TextBox ID="txtSubnet" runat="server"></asp:TextBox></div><br />
+                    <div class="vmn_label span-3">Gateway</div>
+                    <div><asp:TextBox ID="txtGateway" runat="server"></asp:TextBox></div><br />
+                    <div class="vmn_label span-3">Dns</div>
+                    <div><asp:TextBox ID="txtDnsServer" runat="server"></asp:TextBox></div><br />
+                    <div class="vmn_label span-3">&nbsp;</div>
+                    <div><asp:Button ID="cmdProvision" runat="server" Text="Provision" OnClick="cmdProvision_Click" /></div>
                 </div>
                 <div id="vm_spacer-right" class="span-6 last">&nbsp;</div>
             </div>
