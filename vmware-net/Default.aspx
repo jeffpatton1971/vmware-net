@@ -39,6 +39,8 @@
                 <div id="vm_control" class="span-12">
                     <div class="vmn_label">Source VM</div>
                     <asp:DropDownList ID="cboSourceVms" runat="server"></asp:DropDownList><br />
+                    <div class="vmn_label">Template</div>
+                    <asp:CheckBox ID="chkTemplate" runat="server" Checked="True" />
                     <div class="vmn_label">Target VM</div>
                     <asp:TextBox ID="txtTargetVm" runat="server"></asp:TextBox><br />
                     <div class="vmn_label">OS Customization</div>

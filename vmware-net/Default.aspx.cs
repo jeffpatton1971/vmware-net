@@ -960,28 +960,31 @@ namespace vmware_net
             //    itmVirtualMachine.PowerOffVM();
             //}
             //
-            // Removed this check to troubleshoot cloning from a template. 10/24/2013
+            // Added this test to accomodate cloning templates to vm's, per Ryan Lawrence.
             //
-            //if (itmVirtualMachine.Guest.GuestFamily != null)
-            //{
-            //    if ((itmVirtualMachine.Guest.GuestFamily).Contains(specType[specType.GetUpperBound(0)]) == false)
-            //    {
-            //        vimClient.Disconnect();
-            //        txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
-            //        Error_Panel.Visible = true;
-            //        return;
-            //    }
-            //}
-            //else
-            //{
-            //    //
-            //    // Sometimes the GuestFamily property isn't populated
-            //    //
-            //    vimClient.Disconnect();
-            //    txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
-            //    Error_Panel.Visible = true;
-            //    return;
-            //}
+            if (!(chkTemplate.Checked))
+            {
+                if (itmVirtualMachine.Guest.GuestFamily != null)
+                {
+                    if ((itmVirtualMachine.Guest.GuestFamily).Contains(specType[specType.GetUpperBound(0)]) == false)
+                    {
+                        vimClient.Disconnect();
+                        txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
+                        Error_Panel.Visible = true;
+                        return;
+                    }
+                }
+                else
+                {
+                    //
+                    // Sometimes the GuestFamily property isn't populated
+                    //
+                    vimClient.Disconnect();
+                    txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
+                    Error_Panel.Visible = true;
+                    return;
+                }
+            }
             txtResults.Text += "Source : " + itmVirtualMachine.Name + "\r\n";
             //
             // Connect to the selected datastore
