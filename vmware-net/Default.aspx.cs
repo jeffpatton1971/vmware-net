@@ -728,6 +728,10 @@ namespace vmware_net
             }
             //
             // Get a list of clones
+            // To populate the virtual machines to clone from with a filtered list un-comment the  line below that reads
+            // from the webconfigurationmanager, and comment or remove the line below that that has no filter.
+            //
+            //List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, WebConfigurationManager.AppSettings["clonePrefix"].ToString());
             //
             List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, null);
             if (lstVirtualMachines != null)
@@ -1165,7 +1169,32 @@ namespace vmware_net
             //
             // Perform the clone
             //
-            itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, txtTargetVm.Text, mySpec);
+            ManagedObjectReference taskMoRef = itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, txtTargetVm.Text, mySpec);
+            Task cloneVmTask = new Task(vimClient, taskMoRef);
+            //
+            // The following will make the browser appear to hang, I need to hide this panel, and show a working panel
+            //
+            ManagedObjectReference clonedMorRef = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
+            //
+            // Connect to the VM in order to set the custom fields
+            //
+            List<VirtualMachine> clonedVMs = GetVirtualMachines(vimClient, null, txtTargetVm.Text);
+            VirtualMachine clonedVM = clonedVMs[0];
+            NameValueCollection vmFilter = new NameValueCollection();
+            vmFilter.Add("name",txtTargetVm.Text);
+            EntityViewBase vmViewBase = vimClient.FindEntityView(typeof(VirtualMachine),null,vmFilter,null);
+            ManagedEntity vmEntity = new ManagedEntity(vimClient, clonedVM.MoRef);
+            CustomFieldsManager fieldManager = new CustomFieldsManager(vimClient, clonedVM.MoRef);
+            //
+            // One or more custom field names could be stored in the web.config and processed in some fashion
+            //
+            foreach (CustomFieldDef thisField in clonedVM.AvailableField)
+            { 
+                if (thisField.Name.Equals("CreatedBy"))
+                {
+                    fieldManager.SetField(clonedVM.MoRef, 1, txtUsername.Text);
+                }
+            }
             vimClient.Disconnect();
             //
             // Hide the vm controls and show the result box
