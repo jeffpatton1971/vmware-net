@@ -69,6 +69,36 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="blueprint\ie.css" />
+    <Content Include="blueprint\plugins\buttons\icons\cross.png" />
+    <Content Include="blueprint\plugins\buttons\icons\key.png" />
+    <Content Include="blueprint\plugins\buttons\icons\tick.png" />
+    <Content Include="blueprint\plugins\buttons\readme.txt" />
+    <Content Include="blueprint\plugins\buttons\screen.css" />
+    <Content Include="blueprint\plugins\fancy-type\readme.txt" />
+    <Content Include="blueprint\plugins\fancy-type\screen.css" />
+    <Content Include="blueprint\plugins\link-icons\icons\doc.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\email.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\external.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\feed.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\im.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\lock.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\pdf.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\visited.png" />
+    <Content Include="blueprint\plugins\link-icons\icons\xls.png" />
+    <Content Include="blueprint\plugins\link-icons\readme.txt" />
+    <Content Include="blueprint\plugins\link-icons\screen.css" />
+    <Content Include="blueprint\plugins\rtl\readme.txt" />
+    <Content Include="blueprint\plugins\rtl\screen.css" />
+    <Content Include="blueprint\print.css" />
+    <Content Include="blueprint\screen.css" />
+    <Content Include="blueprint\src\forms.css" />
+    <Content Include="blueprint\src\grid.css" />
+    <Content Include="blueprint\src\grid.png" />
+    <Content Include="blueprint\src\ie.css" />
+    <Content Include="blueprint\src\print.css" />
+    <Content Include="blueprint\src\reset.css" />
+    <Content Include="blueprint\src\typography.css" />
     <Content Include="Default.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

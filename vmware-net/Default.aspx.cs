@@ -623,6 +623,40 @@ namespace vmware_net
                 return null;
             }
         }
+        protected CustomizationSpec NewSpecFile(VimClient vimClient, string OsType)
+        {
+            CustomizationSpec customSpec = new CustomizationSpec();
+            string[] dnsServer = { txtDnsServer.Text };
+            string[] gwAddress = { txtGateway.Text };
+
+            try
+            {
+                switch (OsType.ToLower())
+                {
+                    case "linux":
+                        CustomizationIdentitySettings specIdentity = new CustomizationIdentitySettings();
+                        customSpec.Identity = specIdentity;
+                        CustomizationOptions specOptions = new CustomizationOptions();
+                        customSpec.Options = specOptions;
+                        CustomizationIPSettings specIp = new CustomizationIPSettings();
+                        specIp.DnsDomain = null;
+                        specIp.DnsServerList = dnsServer;
+                        specIp.Gateway = gwAddress;
+                        CustomizationIpGenerator customIpgen = new CustomizationIpGenerator();
+                        specIp.Ip = customIpgen;
+                        specIp.SubnetMask = txtSubnet.Text;
+                        customSpec.GlobalIPSettings = specIp;
+                        break;
+                    case "windows":
+                        break;
+                }
+                return customSpec;
+            }
+            catch
+            {
+                return null;
+            }
+        }
         protected string ValidateServer(string viServer)
         {
             //
