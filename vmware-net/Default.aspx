@@ -11,6 +11,7 @@
                 <div id="lp_spacer-left" class="span-6">&nbsp;</div>
                 <div id="lp_control" class="span-12">
                     <!--
+                        Simple change to test out branching on github.
                     Remove the controls between these two commment blocks 
                     to have the server autoloaded from the web.config
                     -->
