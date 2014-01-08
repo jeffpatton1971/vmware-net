@@ -327,6 +327,27 @@ namespace vmware_net
                 return null;
             }
         }
+
+        public static VirtualMachine GetVirtualMachine(VimClient vimClient, string vmName, Datacenter selectedDC = null)
+        {
+            try
+            {
+                List<VirtualMachine> returnVirtualMachine = GetVirtualMachines(vimClient, selectedDC, vmName);
+                if (returnVirtualMachine.Count == 0)
+                {
+                    return null;
+                }
+                if (returnVirtualMachine.Count > 1)
+                {
+                    throw new VimException("More than one virtual machine came back with the same name.");
+                }
+                return returnVirtualMachine[0];
+            }
+            catch (VimException ex)
+            {
+                return null;
+            }
+        }
         public static List<CustomizationSpecInfo> GetCustomizationSpecs(VimClient vimClient)
         {
             //

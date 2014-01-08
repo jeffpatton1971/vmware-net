@@ -259,8 +259,8 @@ namespace vmware_net
             // Does a vm by this name already exist?
             //
             VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
-            List<VirtualMachine> chkVirtualMachines = functions.GetVirtualMachines(vimClient, null, txtTargetVm.Text);
-            if (chkVirtualMachines != null)
+            VirtualMachine chkVirtualMachine = functions.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
+            if (chkVirtualMachine != null)
             {
                 vimClient.Disconnect();
                 txtErrors.Text = "virtual machine " + txtTargetVm.Text + " already exists";
@@ -290,8 +290,7 @@ namespace vmware_net
             //
             // Connect to selected vm to clone
             //
-            List<VirtualMachine> lstVirtualMachines = functions.GetVirtualMachines(vimClient, null, cboSourceVms.SelectedItem.Text);
-            VirtualMachine itmVirtualMachine = lstVirtualMachines[0];
+            VirtualMachine itmVirtualMachine = functions.GetVirtualMachine(vimClient, cboSourceVms.SelectedItem.Text, null);
             //
             // Make sure the spec file type matches the guest os
             //
@@ -536,8 +535,7 @@ namespace vmware_net
             //
             // Connect to the VM in order to set the custom fields
             //
-            List<VirtualMachine> clonedVMs = functions.GetVirtualMachines(vimClient, null, txtTargetVm.Text);
-            VirtualMachine clonedVM = clonedVMs[0];
+            VirtualMachine clonedVM = functions.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
             NameValueCollection vmFilter = new NameValueCollection();
             vmFilter.Add("name",txtTargetVm.Text);
             EntityViewBase vmViewBase = vimClient.FindEntityView(typeof(VirtualMachine),null,vmFilter,null);
