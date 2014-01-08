@@ -24,45 +24,6 @@ namespace vmware_net
     }
     public partial class Default : System.Web.UI.Page
     {
-        protected VimClient ConnectServer(string viServer, string viUser, string viPassword)
-        {
-            //
-            // Establish a connetion to the provided sdk server
-            //
-            VimClient vimClient = new VimClient();
-            ServiceContent vimServiceContent = new ServiceContent();
-            UserSession vimSession = new UserSession();
-            //
-            // Connect over https to the /sdk page
-            //
-            try
-            {
-                vimClient.Connect(viServer);
-                vimSession = vimClient.Login(viUser, viPassword);
-                vimServiceContent = vimClient.ServiceContent;
-
-                return vimClient;
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-            catch (Exception e)
-            {
-                //
-                // Regular Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + e.GetType().Name + " with message '" + e.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                vimClient = null;
-                return vimClient;
-            }
-        }
         protected List<Datacenter> GetDataCenter(VimClient vimClient, string dcName = null)
         {
             //
@@ -95,523 +56,6 @@ namespace vmware_net
                 }
 
                 return lstDatacenters;
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<Datastore> GetDataStore(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
-        {
-            //
-            // Get a list of datastores from a specific datacenter
-            //
-            List<Datastore> lstDatastores = new List<Datastore>();
-            NameValueCollection dsFilter = new NameValueCollection();
-            ManagedObjectReference DcMoRef = new ManagedObjectReference();
-
-            if (dsName != null)
-            {
-                //
-                // The name of a specific datastore
-                //
-                dsFilter.Add("name", dsName);
-            }
-            else
-            {
-                dsFilter = null;
-            }
-
-            if (selectedDC != null)
-            {
-                //
-                // A specific datacenter to get datastores from
-                //
-                DcMoRef = selectedDC.MoRef;
-            }
-            else
-            {
-                DcMoRef = null;
-            }
-            try
-            {
-                //
-                // if DcMoref and dsFilter are empty return all datastores
-                //
-                List<EntityViewBase> appDatastores = vimClient.FindEntityViews(typeof(Datastore), DcMoRef, dsFilter, null);
-                if (appDatastores != null)
-                {
-                    foreach (EntityViewBase appDatastore in appDatastores)
-                    {
-                        Datastore thisDatastore = (Datastore)appDatastore;
-                        lstDatastores.Add(thisDatastore);
-                    }
-                    return lstDatastores;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected VmwareDistributedVirtualSwitch GetDvSwitch(VimClient vimClient, ManagedObjectReference dvportGroupSwitch)
-        {
-            //
-            // Get a specific distributed switch
-            //
-            try
-            {
-                //
-                // Get the switch associated with the moref
-                //
-                ViewBase appSwitch = vimClient.GetView(dvportGroupSwitch, null);
-                if (appSwitch != null)
-                {
-                    VmwareDistributedVirtualSwitch thisDvSwitch = (VmwareDistributedVirtualSwitch)appSwitch;
-                    return thisDvSwitch;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<DistributedVirtualPortgroup> GetDVPortGroups(VimClient vimClient, Datacenter selectedDC = null, string pgName = null)
-        {
-            //
-            // Get a list of Distributed Portgroups
-            //
-            List<DistributedVirtualPortgroup> lstPortGroups = new List<DistributedVirtualPortgroup>();
-            NameValueCollection pgFilter = new NameValueCollection();
-            ManagedObjectReference DcMoRef = new ManagedObjectReference();
-
-            if (pgName != null)
-            {
-                //
-                // A specific portgroup
-                //
-                pgFilter.Add("name", pgName);
-            }
-            else
-            {
-                pgFilter = null;
-            }
-
-            if (selectedDC != null)
-            {
-                //
-                // A specific datacenter
-                //
-                DcMoRef = selectedDC.MoRef;
-            }
-            else
-            {
-                DcMoRef = null;
-            }
-            try
-            {
-                //
-                // If DcMoref and pgFilter are null return all Portgroups, otherwise return selected Portgroup
-                //
-                List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(DistributedVirtualPortgroup), DcMoRef, pgFilter, null);
-                if (appPortGroups != null)
-                {
-                    foreach (EntityViewBase appPortGroup in appPortGroups)
-                    {
-                        DistributedVirtualPortgroup thisPortGroup = (DistributedVirtualPortgroup)appPortGroup;
-                        lstPortGroups.Add(thisPortGroup);
-                    }
-                    return lstPortGroups;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<Network> GetPortGroups(VimClient vimClient, Datacenter selectedDC = null, string pgName = null)
-        {
-            //
-            // Get a list of Portgroups
-            //
-            List<Network> lstPortGroups = new List<Network>();
-            NameValueCollection pgFilter = new NameValueCollection();
-            ManagedObjectReference DcMoRef = new ManagedObjectReference();
-
-            if (pgName != null)
-            {
-                //
-                // Name of a specific portgroup
-                //
-                pgFilter.Add("name", pgName);
-            }
-            else
-            {
-                pgFilter = null;
-            }
-
-            if (selectedDC != null)
-            {
-                //
-                // A specific datacenter
-                //
-                DcMoRef = selectedDC.MoRef;
-            }
-            else
-            {
-                DcMoRef = null;
-            }
-            try
-            {
-                //
-                // If DcMoRef and pgFilter are null return all portgroups, otherwise return the selected portgroup
-                //
-                List<EntityViewBase> appPortGroups = vimClient.FindEntityViews(typeof(Network), DcMoRef, pgFilter, null);
-                if (appPortGroups != null)
-                {
-                    foreach (EntityViewBase appPortGroup in appPortGroups)
-                    {
-                        Network thisPortGroup = (Network)appPortGroup;
-                        lstPortGroups.Add(thisPortGroup);
-                    }
-                    return lstPortGroups;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<VirtualMachine> GetVirtualMachines(VimClient vimClient, Datacenter selectedDC = null, string vmName = null)
-        {
-            //
-            // Get a list of virtual machines
-            //
-            List<VirtualMachine> lstVirtualMachines = new List<VirtualMachine>();
-            NameValueCollection vmFilter = new NameValueCollection();
-            ManagedObjectReference DcMoRef = new ManagedObjectReference();
-
-            if (vmName != null)
-            {
-                //
-                // A specific virtual machine
-                //
-                vmFilter.Add("name", vmName);
-            }
-            else
-            {
-                vmFilter = null;
-            }
-
-            if (selectedDC != null)
-            {
-                //
-                // A specific datacenter
-                //
-                DcMoRef = selectedDC.MoRef;
-            }
-            else
-            {
-                DcMoRef = null;
-            }
-            try
-            {
-                //
-                // If DcMoRef and vmFilter are null return all Vm's, otherwise return specific vm's
-                //
-                List<EntityViewBase> appVirtualMachines = vimClient.FindEntityViews(typeof(VirtualMachine), DcMoRef, vmFilter, null);
-                if (appVirtualMachines != null)
-                {
-                    foreach (EntityViewBase appVirtualMachine in appVirtualMachines)
-                    {
-                        VirtualMachine thisVirtualMachine = (VirtualMachine)appVirtualMachine;
-                        lstVirtualMachines.Add(thisVirtualMachine);
-                    }
-                    return lstVirtualMachines;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<CustomizationSpecInfo> GetCustomizationSpecs(VimClient vimClient)
-        {
-            //
-            // Get a list of Customization Spec Info items
-            //
-            try
-            {
-                //
-                // Get all Spec Info items
-                //
-                List<CustomizationSpecInfo> lstSpecInfo = new List<CustomizationSpecInfo>();
-                CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
-                if (specManager != null)
-                {
-                    foreach (CustomizationSpecInfo specInfo in specManager.Info)
-                    {
-                        lstSpecInfo.Add(specInfo);
-                    }
-                    return lstSpecInfo;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected CustomizationSpecItem GetCustomizationSpecItem(VimClient vimClient, string specName = null)
-        {
-            //
-            // Get one or more Customization Spec Items
-            //
-            try
-            {
-                //
-                // Need a manager to collect the spec items
-                //
-                CustomizationSpecManager specManager = (CustomizationSpecManager)vimClient.GetView(vimClient.ServiceContent.CustomizationSpecManager, null);
-                if (specManager != null)
-                {
-                    CustomizationSpecItem itmCustomizationSpecItem = specManager.GetCustomizationSpec(specName);
-                    return itmCustomizationSpecItem;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<ClusterComputeResource> GetClusters(VimClient vimClient, string clusterName = null)
-        {
-            //
-            // Get one or more clusters
-            //
-            List<ClusterComputeResource> lstClusters = new List<ClusterComputeResource>();
-            List<EntityViewBase> appClusters = new List<EntityViewBase>();
-            try
-            {
-                if (clusterName == null)
-                {
-                    //
-                    // Get all the clusters
-                    //
-                    appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, null, null);
-                }
-                else
-                {
-                    //
-                    // Get a specific cluster
-                    //
-                    NameValueCollection clusterFilter = new NameValueCollection();
-                    clusterFilter.Add("name", clusterName);
-                    appClusters = vimClient.FindEntityViews(typeof(ClusterComputeResource), null, clusterFilter, null);
-                }
-                if (appClusters != null)
-                {
-                    foreach (EntityViewBase appCluster in appClusters)
-                    {
-                        ClusterComputeResource thisCluster = (ClusterComputeResource)appCluster;
-                        lstClusters.Add(thisCluster);
-                    }
-                    return lstClusters;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<HostSystem> GetHosts(VimClient vimClient, string hostParent = null)
-        {
-            //
-            // Get one or more virtual hosts
-            //
-            List<HostSystem> lstHosts = new List<HostSystem>();
-            List<EntityViewBase> appHosts = new List<EntityViewBase>();
-            try
-            {
-                if (hostParent == null)
-                {
-                    //
-                    // Get all the hosts
-                    //
-                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, null, null);
-                }
-                else
-                {
-                    //
-                    // Get all the hosts in a cluster
-                    //
-                    NameValueCollection hostFilter = new NameValueCollection();
-                    hostFilter.Add("parent", hostParent);
-
-                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, hostFilter, null);
-                }
-                if (appHosts != null)
-                {
-                    foreach (EntityViewBase appHost in appHosts)
-                    {
-                        HostSystem thisHost = (HostSystem)appHost;
-                        lstHosts.Add(thisHost);
-                    }
-                    return lstHosts;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<Datacenter> GetDcFromCluster(VimClient vimClient, string clusterParent)
-        {
-            //
-            // Get a datacenter based on the cluster
-            //
-            List<Datacenter> lstDataCenters = new List<Datacenter>();
-            NameValueCollection parentFilter = new NameValueCollection();
-            parentFilter.Add("hostFolder", clusterParent);
-            try
-            {
-                //
-                // Get a specific datacenter based on parentFilter
-                //
-                List<EntityViewBase> arrDataCenters = vimClient.FindEntityViews(typeof(Datacenter), null, parentFilter, null);
-                if (arrDataCenters != null)
-                {
-                    foreach (EntityViewBase arrDatacenter in arrDataCenters)
-                    {
-                        Datacenter thisDatacenter = (Datacenter)arrDatacenter;
-                        lstDataCenters.Add(thisDatacenter);
-                    }
-                    return lstDataCenters;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        protected List<ResourcePool> GetResPools(VimClient vimClient, string ClusterMoRefVal)
-        {
-            //
-            // Get resource pools from a specific cluster
-            //
-            List<ResourcePool> lstResPools = new List<ResourcePool>();
-            NameValueCollection clusterFilter = new NameValueCollection();
-            clusterFilter.Add("parent", ClusterMoRefVal);
-            try
-            {
-                List<EntityViewBase> arrResPools = vimClient.FindEntityViews(typeof(ResourcePool), null, clusterFilter, null);
-                if (arrResPools != null)
-                {
-                    foreach (EntityViewBase arrResPool in arrResPools)
-                    {
-                        ResourcePool thisResPool = (ResourcePool)arrResPool;
-                        lstResPools.Add(thisResPool);
-                    }
-                    return lstResPools;
-                }
-                else
-                {
-                    return null;
-                }
             }
             catch (VimException ex)
             {
@@ -656,51 +100,6 @@ namespace vmware_net
             {
                 return null;
             }
-        }
-        protected string ValidateServer(string viServer)
-        {
-            //
-            // Validate viServer for appropriate values
-            //
-            viServer = viServer.Trim().ToLower();
-            if (viServer.Contains("://") == false)
-            {
-                //
-                // Assuming if there is no :// someone entered flat server name
-                //
-                viServer = "https://" + viServer;
-            }
-            //
-            // Convert the string into a URI for further testing
-            //
-            Uri uriVServer = new Uri(viServer);
-            //
-            // Check to see what protocol we're using
-            //
-            string urlScheme = uriVServer.Scheme;
-            switch (urlScheme)
-            {
-                case "https":
-                    break;
-                default:
-                    viServer = viServer.Replace(uriVServer.Scheme + "://", "https://");
-                    break;
-            }
-            //
-            // Check to see what that path is
-            //
-            if (uriVServer.AbsolutePath == "/")
-            {
-                viServer = viServer + "/sdk";
-            }
-            else if (uriVServer.AbsolutePath != "/sdk")
-            {
-                //
-                // Some other path is listed
-                //
-                viServer = viServer.Replace(uriVServer.AbsolutePath, "/sdk");
-            }
-            return viServer;
         }
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -750,12 +149,12 @@ namespace vmware_net
             }
             else
             {
-                Globals.sViServer = ValidateServer(txtSdkServer.Text);
+                Globals.sViServer = functions.ValidateServer(txtSdkServer.Text);
             }
             //
             // Establish a connection with the Vmware server
             //
-            VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             if (vimClient == null)
             {
                 return;
@@ -767,7 +166,7 @@ namespace vmware_net
             //
             //List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, WebConfigurationManager.AppSettings["clonePrefix"].ToString());
             //
-            List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, null);
+            List<VirtualMachine> lstVirtualMachines = functions.GetVirtualMachines(vimClient, null, null);
             if (lstVirtualMachines != null)
             {
                 foreach (VirtualMachine itmVirtualMachine in lstVirtualMachines)
@@ -781,7 +180,7 @@ namespace vmware_net
             //
             // Get a list of OS Customizations
             //
-            List<CustomizationSpecInfo> lstSpecs = GetCustomizationSpecs(vimClient);
+            List<CustomizationSpecInfo> lstSpecs = functions.GetCustomizationSpecs(vimClient);
             if (lstSpecs != null)
             {
                 foreach (CustomizationSpecInfo itmSpec in lstSpecs)
@@ -795,7 +194,7 @@ namespace vmware_net
             //
             // Get a list of clusters
             //
-            List<ClusterComputeResource> lstClusters = GetClusters(vimClient);
+            List<ClusterComputeResource> lstClusters = functions.GetClusters(vimClient);
             foreach (ClusterComputeResource itmCluster in lstClusters)
             {
                 ListItem thisCluster = new ListItem();
@@ -806,12 +205,12 @@ namespace vmware_net
             //
             // Need to get at the Datacenter
             //
-            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Get a list of datastores
             //
-            List<ClusterComputeResource> SelectedCluster = GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            List<ClusterComputeResource> SelectedCluster = functions.GetClusters(vimClient, cboClusters.SelectedItem.Text);
             ClusterComputeResource myCluster = SelectedCluster[0];
             //
             // Create a list of Datastores to populate later
@@ -842,7 +241,7 @@ namespace vmware_net
             //
             // Get a list of network portgroups
             //
-            List<DistributedVirtualPortgroup> lstDVPortGroups = GetDVPortGroups(vimClient, itmDatacenter);
+            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetDVPortGroups(vimClient, itmDatacenter);
             if (lstDVPortGroups != null)
             {
                 foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
@@ -856,7 +255,7 @@ namespace vmware_net
             //
             // Get a list of Resource Pools
             //
-            List<ResourcePool> lstResPools = GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            List<ResourcePool> lstResPools = functions.GetResPools(vimClient, cboClusters.SelectedItem.Value);
             if (lstResPools != null)
             {
                 foreach (ResourcePool itmResPool in lstResPools)
@@ -934,8 +333,8 @@ namespace vmware_net
             //
             // Does a vm by this name already exist?
             //
-            VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
-            List<VirtualMachine> chkVirtualMachines = GetVirtualMachines(vimClient, null, txtTargetVm.Text);
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            List<VirtualMachine> chkVirtualMachines = functions.GetVirtualMachines(vimClient, null, txtTargetVm.Text);
             if (chkVirtualMachines != null)
             {
                 vimClient.Disconnect();
@@ -951,13 +350,13 @@ namespace vmware_net
             //
             // Connect to selected datacenter
             //
-            List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            List<ClusterComputeResource> lstClusters = functions.GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Get a list of hosts in the selected cluster
             //
-            List<HostSystem> lstHosts = GetHosts(vimClient, cboClusters.SelectedValue);
+            List<HostSystem> lstHosts = functions.GetHosts(vimClient, cboClusters.SelectedValue);
             //
             // Randomly pick host
             //
@@ -966,7 +365,7 @@ namespace vmware_net
             //
             // Connect to selected vm to clone
             //
-            List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, cboSourceVms.SelectedItem.Text);
+            List<VirtualMachine> lstVirtualMachines = functions.GetVirtualMachines(vimClient, null, cboSourceVms.SelectedItem.Text);
             VirtualMachine itmVirtualMachine = lstVirtualMachines[0];
             //
             // Make sure the spec file type matches the guest os
@@ -1027,19 +426,19 @@ namespace vmware_net
             //
             // Connect to the selected datastore
             //
-            List<Datastore> lstDatastores = GetDataStore(vimClient, null, cboDatastores.SelectedItem.Text);
+            List<Datastore> lstDatastores = functions.GetDataStore(vimClient, null, cboDatastores.SelectedItem.Text);
             Datastore itmDatastore = lstDatastores[0];
             txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
             //
             // Connect to portgroup
             //
-            List<DistributedVirtualPortgroup> lstDvPortGroups = GetDVPortGroups(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
+            List<DistributedVirtualPortgroup> lstDvPortGroups = functions.GetDVPortGroups(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
             DistributedVirtualPortgroup itmDvPortGroup = lstDvPortGroups[0];
             txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
             //
             // Connect to the customizationspec
             //
-            CustomizationSpecItem itmSpecItem = GetCustomizationSpecItem(vimClient, cboCustomizations.SelectedItem.Text);
+            CustomizationSpecItem itmSpecItem = functions.GetCustomizationSpecItem(vimClient, cboCustomizations.SelectedItem.Text);
             txtResults.Text += "Spec : " + cboCustomizations.SelectedItem.Text + "\r\n";
             //
             // Create a new VirtualMachineCloneSpec
@@ -1051,7 +450,7 @@ namespace vmware_net
             //
             // Get resource pool for selected cluster
             //
-            List<ResourcePool> lstResPools = GetResPools(vimClient, cboClusters.SelectedValue);
+            List<ResourcePool> lstResPools = functions.GetResPools(vimClient, cboClusters.SelectedValue);
             ResourcePool itmResPool = lstResPools[0];
             //
             // Assign resource pool to specitem
@@ -1180,7 +579,7 @@ namespace vmware_net
             //
             // Connect to the virtual switch
             //
-            VmwareDistributedVirtualSwitch dvSwitch = GetDvSwitch(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch);
+            VmwareDistributedVirtualSwitch dvSwitch = functions.GetDvSwitch(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch);
             //
             // Assign the proper switch port
             //
@@ -1212,7 +611,7 @@ namespace vmware_net
             //
             // Connect to the VM in order to set the custom fields
             //
-            List<VirtualMachine> clonedVMs = GetVirtualMachines(vimClient, null, txtTargetVm.Text);
+            List<VirtualMachine> clonedVMs = functions.GetVirtualMachines(vimClient, null, txtTargetVm.Text);
             VirtualMachine clonedVM = clonedVMs[0];
             NameValueCollection vmFilter = new NameValueCollection();
             vmFilter.Add("name",txtTargetVm.Text);
@@ -1255,7 +654,7 @@ namespace vmware_net
             //
             // Establish a connection with the Vmware server
             //
-            VimClient vimClient = ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             //
             // Clear out existing entries
             //
@@ -1265,9 +664,9 @@ namespace vmware_net
             //
             // Need to get at the Datacenter for the selected cluster
             //
-            List<ClusterComputeResource> lstClusters = GetClusters(vimClient, cboClusters.SelectedItem.Text);
+            List<ClusterComputeResource> lstClusters = functions.GetClusters(vimClient, cboClusters.SelectedItem.Text);
             ClusterComputeResource itmCluster = lstClusters[0];
-            List<Datacenter> lstDatacenters = GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Update datastore list
@@ -1301,7 +700,7 @@ namespace vmware_net
             //
             // Update list of network portgroups
             //
-            List<DistributedVirtualPortgroup> lstDVPortGroups = GetDVPortGroups(vimClient, itmDatacenter);
+            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetDVPortGroups(vimClient, itmDatacenter);
             if (lstDVPortGroups != null)
             {
                 foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
@@ -1314,7 +713,7 @@ namespace vmware_net
             }
             else
             {
-                List<Network> lstPortGroups = GetPortGroups(vimClient, itmDatacenter);
+                List<Network> lstPortGroups = functions.GetPortGroups(vimClient, itmDatacenter);
                 if (lstPortGroups != null)
                 {
                     foreach (Network itmPortGroup in lstPortGroups)
@@ -1329,7 +728,7 @@ namespace vmware_net
             //
             // Get a list of Resource Pools
             //
-            List<ResourcePool> lstResPools = GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            List<ResourcePool> lstResPools = functions.GetResPools(vimClient, cboClusters.SelectedItem.Value);
             if (lstResPools != null)
             {
                 foreach (ResourcePool itmResPool in lstResPools)
