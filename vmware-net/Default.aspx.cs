@@ -272,8 +272,8 @@ namespace vmware_net
             //
             // Connect to selected datacenter
             //
-            List<ClusterComputeResource> lstClusters = functions.GetClusters(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            ClusterComputeResource itmCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Get a list of hosts in the selected cluster
@@ -581,9 +581,8 @@ namespace vmware_net
             //
             // Need to get at the Datacenter for the selected cluster
             //
-            List<ClusterComputeResource> lstClusters = functions.GetClusters(vimClient, cboClusters.SelectedItem.Text);
-            ClusterComputeResource itmCluster = lstClusters[0];
-            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            ClusterComputeResource itmCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Update datastore list
