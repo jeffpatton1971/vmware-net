@@ -9,6 +9,54 @@ namespace vmware_net
 {
     public class functions
     {
+        public static string ValidateServer(string viServer)
+        {
+            //
+            // Validate viServer for appropriate values
+            //
+            viServer = viServer.Trim().ToLower();
+            if (viServer.Contains("://") == false)
+            {
+                //
+                // Assuming if there is no :// someone entered flat server name
+                //
+                viServer = "https://" + viServer;
+            }
+            //
+            // Convert the string into a URI for further testing
+            //
+            Uri uriVServer = new Uri(viServer);
+            //
+            // Check to see what protocol we're using
+            //
+            string urlScheme = uriVServer.Scheme;
+            switch (urlScheme)
+            {
+                case "https":
+                    break;
+                default:
+                    viServer = viServer.Replace(uriVServer.Scheme + "://", "https://");
+                    break;
+            }
+            //
+            // Check to see what that path is
+            //
+            if (uriVServer.AbsolutePath == "/")
+            {
+                viServer = viServer + "/sdk";
+            }
+            else if (uriVServer.AbsolutePath != "/sdk")
+            {
+                //
+                // Some other path is listed
+                //
+                viServer = viServer.Replace(uriVServer.AbsolutePath, "/sdk");
+            }
+            return viServer;
+        }
+    }
+    public class fClient
+    {
         public static VimClient ConnectServer(string viServer, string viUser, string viPassword)
         {
             //
@@ -48,6 +96,9 @@ namespace vmware_net
                 return vimClient;
             }
         }
+    }
+    public class fDatastore
+    {
         public static List<Datastore> GetDataStores(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
         {
             //
@@ -130,6 +181,9 @@ namespace vmware_net
                 return null;
             }
         }
+    }
+    public class fNetwork
+    {
         public static VmwareDistributedVirtualSwitch GetDvSwitch(VimClient vimClient, ManagedObjectReference dvportGroupSwitch)
         {
             //
@@ -305,6 +359,9 @@ namespace vmware_net
                 return null;
             }
         }
+    }
+    public class fVm
+    {
         public static List<VirtualMachine> GetVirtualMachines(VimClient vimClient, Datacenter selectedDC = null, string vmName = null)
         {
             //
@@ -453,6 +510,62 @@ namespace vmware_net
                 return null;
             }
         }
+    }
+    public class fHost
+    {
+        public static List<HostSystem> GetHosts(VimClient vimClient, string hostParent = null)
+        {
+            //
+            // Get one or more virtual hosts
+            //
+            List<HostSystem> lstHosts = new List<HostSystem>();
+            List<EntityViewBase> appHosts = new List<EntityViewBase>();
+            try
+            {
+                if (hostParent == null)
+                {
+                    //
+                    // Get all the hosts
+                    //
+                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, null, null);
+                }
+                else
+                {
+                    //
+                    // Get all the hosts in a cluster
+                    //
+                    NameValueCollection hostFilter = new NameValueCollection();
+                    hostFilter.Add("parent", hostParent);
+
+                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, hostFilter, null);
+                }
+                if (appHosts != null)
+                {
+                    foreach (EntityViewBase appHost in appHosts)
+                    {
+                        HostSystem thisHost = (HostSystem)appHost;
+                        lstHosts.Add(thisHost);
+                    }
+                    return lstHosts;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (VimException ex)
+            {
+                //
+                // VMware Exception occurred
+                //
+                //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                //Error_Panel.Visible = true;
+                return null;
+            }
+        }
+    }
+    public class fCluster
+    {
         public static List<ClusterComputeResource> GetClusters(VimClient vimClient, string clusterName = null)
         {
             //
@@ -522,94 +635,6 @@ namespace vmware_net
                 return null;
             }
         }
-        public static List<HostSystem> GetHosts(VimClient vimClient, string hostParent = null)
-        {
-            //
-            // Get one or more virtual hosts
-            //
-            List<HostSystem> lstHosts = new List<HostSystem>();
-            List<EntityViewBase> appHosts = new List<EntityViewBase>();
-            try
-            {
-                if (hostParent == null)
-                {
-                    //
-                    // Get all the hosts
-                    //
-                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, null, null);
-                }
-                else
-                {
-                    //
-                    // Get all the hosts in a cluster
-                    //
-                    NameValueCollection hostFilter = new NameValueCollection();
-                    hostFilter.Add("parent", hostParent);
-
-                    appHosts = vimClient.FindEntityViews(typeof(HostSystem), null, hostFilter, null);
-                }
-                if (appHosts != null)
-                {
-                    foreach (EntityViewBase appHost in appHosts)
-                    {
-                        HostSystem thisHost = (HostSystem)appHost;
-                        lstHosts.Add(thisHost);
-                    }
-                    return lstHosts;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                //Error_Panel.Visible = true;
-                return null;
-            }
-        }
-        public static List<Datacenter> GetDcFromCluster(VimClient vimClient, string clusterParent)
-        {
-            //
-            // Get a datacenter based on the cluster
-            //
-            List<Datacenter> lstDataCenters = new List<Datacenter>();
-            NameValueCollection parentFilter = new NameValueCollection();
-            parentFilter.Add("hostFolder", clusterParent);
-            try
-            {
-                //
-                // Get a specific datacenter based on parentFilter
-                //
-                List<EntityViewBase> arrDataCenters = vimClient.FindEntityViews(typeof(Datacenter), null, parentFilter, null);
-                if (arrDataCenters != null)
-                {
-                    foreach (EntityViewBase arrDatacenter in arrDataCenters)
-                    {
-                        Datacenter thisDatacenter = (Datacenter)arrDatacenter;
-                        lstDataCenters.Add(thisDatacenter);
-                    }
-                    return lstDataCenters;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (VimException ex)
-            {
-                //
-                // VMware Exception occurred
-                //
-                //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
-                //Error_Panel.Visible = true;
-                return null;
-            }
-        }
         public static List<ResourcePool> GetResPools(VimClient vimClient, string ClusterMoRefVal)
         {
             //
@@ -656,7 +681,7 @@ namespace vmware_net
                 }
                 if (returnResourcePool.Count > 1)
                 {
-                    throw new VimException("More than one resource pool returned.")
+                    throw new VimException("More than one resource pool returned.");
                 }
                 return returnResourcePool[0];
             }
@@ -665,50 +690,46 @@ namespace vmware_net
                 return null;
             }
         }
-        public static string ValidateServer(string viServer)
+    }
+    public class fDatacenter
+    {
+        public static List<Datacenter> GetDcFromCluster(VimClient vimClient, string clusterParent)
         {
             //
-            // Validate viServer for appropriate values
+            // Get a datacenter based on the cluster
             //
-            viServer = viServer.Trim().ToLower();
-            if (viServer.Contains("://") == false)
+            List<Datacenter> lstDataCenters = new List<Datacenter>();
+            NameValueCollection parentFilter = new NameValueCollection();
+            parentFilter.Add("hostFolder", clusterParent);
+            try
             {
                 //
-                // Assuming if there is no :// someone entered flat server name
+                // Get a specific datacenter based on parentFilter
                 //
-                viServer = "https://" + viServer;
+                List<EntityViewBase> arrDataCenters = vimClient.FindEntityViews(typeof(Datacenter), null, parentFilter, null);
+                if (arrDataCenters != null)
+                {
+                    foreach (EntityViewBase arrDatacenter in arrDataCenters)
+                    {
+                        Datacenter thisDatacenter = (Datacenter)arrDatacenter;
+                        lstDataCenters.Add(thisDatacenter);
+                    }
+                    return lstDataCenters;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            //
-            // Convert the string into a URI for further testing
-            //
-            Uri uriVServer = new Uri(viServer);
-            //
-            // Check to see what protocol we're using
-            //
-            string urlScheme = uriVServer.Scheme;
-            switch (urlScheme)
-            {
-                case "https":
-                    break;
-                default:
-                    viServer = viServer.Replace(uriVServer.Scheme + "://", "https://");
-                    break;
-            }
-            //
-            // Check to see what that path is
-            //
-            if (uriVServer.AbsolutePath == "/")
-            {
-                viServer = viServer + "/sdk";
-            }
-            else if (uriVServer.AbsolutePath != "/sdk")
+            catch (VimException ex)
             {
                 //
-                // Some other path is listed
+                // VMware Exception occurred
                 //
-                viServer = viServer.Replace(uriVServer.AbsolutePath, "/sdk");
+                //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                //Error_Panel.Visible = true;
+                return null;
             }
-            return viServer;
         }
     }
 }

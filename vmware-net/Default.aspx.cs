@@ -77,7 +77,7 @@ namespace vmware_net
             //
             // Establish a connection with the Vmware server
             //
-            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VimClient vimClient = fClient.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             if (vimClient == null)
             {
                 return;
@@ -89,7 +89,7 @@ namespace vmware_net
             //
             //List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, WebConfigurationManager.AppSettings["clonePrefix"].ToString());
             //
-            List<VirtualMachine> lstVirtualMachines = functions.GetVirtualMachines(vimClient, null, null);
+            List<VirtualMachine> lstVirtualMachines = fVm.GetVirtualMachines(vimClient, null, null);
             if (lstVirtualMachines != null)
             {
                 foreach (VirtualMachine itmVirtualMachine in lstVirtualMachines)
@@ -103,7 +103,7 @@ namespace vmware_net
             //
             // Get a list of OS Customizations
             //
-            List<CustomizationSpecInfo> lstSpecs = functions.GetCustomizationSpecs(vimClient);
+            List<CustomizationSpecInfo> lstSpecs = fVm.GetCustomizationSpecs(vimClient);
             if (lstSpecs != null)
             {
                 foreach (CustomizationSpecInfo itmSpec in lstSpecs)
@@ -117,7 +117,7 @@ namespace vmware_net
             //
             // Get a list of clusters
             //
-            List<ClusterComputeResource> lstClusters = functions.GetClusters(vimClient);
+            List<ClusterComputeResource> lstClusters = fCluster.GetClusters(vimClient);
             foreach (ClusterComputeResource itmCluster in lstClusters)
             {
                 ListItem thisCluster = new ListItem();
@@ -128,11 +128,11 @@ namespace vmware_net
             //
             // Get at the ClusterResource
             //
-            ClusterComputeResource SelectedCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
+            ClusterComputeResource SelectedCluster = fCluster.GetCluster(vimClient, cboClusters.SelectedItem.Text);
             //
             // Need to get at the Datacenter
             //
-            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, SelectedCluster.Parent.Value);
+            List<Datacenter> lstDatacenters = fDatacenter.GetDcFromCluster(vimClient, SelectedCluster.Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Create a list of Datastores to populate later
@@ -163,7 +163,7 @@ namespace vmware_net
             //
             // Get a list of network portgroups
             //
-            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetDVPortGroups(vimClient, itmDatacenter);
+            List<DistributedVirtualPortgroup> lstDVPortGroups = fNetwork.GetDVPortGroups(vimClient, itmDatacenter);
             if (lstDVPortGroups != null)
             {
                 foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
@@ -177,7 +177,7 @@ namespace vmware_net
             //
             // Get a list of Resource Pools
             //
-            List<ResourcePool> lstResPools = functions.GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            List<ResourcePool> lstResPools = fCluster.GetResPools(vimClient, cboClusters.SelectedItem.Value);
             if (lstResPools != null)
             {
                 foreach (ResourcePool itmResPool in lstResPools)
@@ -255,8 +255,8 @@ namespace vmware_net
             //
             // Does a vm by this name already exist?
             //
-            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
-            VirtualMachine chkVirtualMachine = functions.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
+            VimClient vimClient = fClient.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VirtualMachine chkVirtualMachine = fVm.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
             if (chkVirtualMachine != null)
             {
                 vimClient.Disconnect();
@@ -272,13 +272,13 @@ namespace vmware_net
             //
             // Connect to selected datacenter
             //
-            ClusterComputeResource itmCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
+            ClusterComputeResource itmCluster = fCluster.GetCluster(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = fDatacenter.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Get a list of hosts in the selected cluster
             //
-            List<HostSystem> lstHosts = functions.GetHosts(vimClient, cboClusters.SelectedValue);
+            List<HostSystem> lstHosts = fHost.GetHosts(vimClient, cboClusters.SelectedValue);
             //
             // Randomly pick host
             //
@@ -287,7 +287,7 @@ namespace vmware_net
             //
             // Connect to selected vm to clone
             //
-            VirtualMachine itmVirtualMachine = functions.GetVirtualMachine(vimClient, cboSourceVms.SelectedItem.Text, null);
+            VirtualMachine itmVirtualMachine = fVm.GetVirtualMachine(vimClient, cboSourceVms.SelectedItem.Text, null);
             //
             // Make sure the spec file type matches the guest os
             //
@@ -347,17 +347,17 @@ namespace vmware_net
             //
             // Connect to the selected datastore
             //
-            Datastore itmDatastore = functions.GetDatastore(vimClient, cboDatastores.SelectedItem.Text, null);
+            Datastore itmDatastore = fDatastore.GetDatastore(vimClient, cboDatastores.SelectedItem.Text, null);
             txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
             //
             // Connect to portgroup
             //
-            DistributedVirtualPortgroup itmDvPortGroup = functions.GetDVPortGroup(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
+            DistributedVirtualPortgroup itmDvPortGroup = fNetwork.GetDVPortGroup(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
             txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
             //
             // Connect to the customizationspec
             //
-            CustomizationSpecItem itmSpecItem = functions.GetCustomizationSpecItem(vimClient, cboCustomizations.SelectedItem.Text);
+            CustomizationSpecItem itmSpecItem = fVm.GetCustomizationSpecItem(vimClient, cboCustomizations.SelectedItem.Text);
             txtResults.Text += "Spec : " + cboCustomizations.SelectedItem.Text + "\r\n";
             //
             // Create a new VirtualMachineCloneSpec
@@ -369,7 +369,7 @@ namespace vmware_net
             //
             // Get resource pool for selected cluster
             //
-            ResourcePool itmResPool = functions.GetResPool(vimClient, cboClusters.SelectedValue);
+            ResourcePool itmResPool = fCluster.GetResPool(vimClient, cboClusters.SelectedValue);
             //
             // Assign resource pool to specitem
             //
@@ -497,7 +497,7 @@ namespace vmware_net
             //
             // Connect to the virtual switch
             //
-            VmwareDistributedVirtualSwitch dvSwitch = functions.GetDvSwitch(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch);
+            VmwareDistributedVirtualSwitch dvSwitch = fNetwork.GetDvSwitch(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch);
             //
             // Assign the proper switch port
             //
@@ -529,7 +529,7 @@ namespace vmware_net
             //
             // Connect to the VM in order to set the custom fields
             //
-            VirtualMachine clonedVM = functions.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
+            VirtualMachine clonedVM = fVm.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
             NameValueCollection vmFilter = new NameValueCollection();
             vmFilter.Add("name",txtTargetVm.Text);
             EntityViewBase vmViewBase = vimClient.FindEntityView(typeof(VirtualMachine),null,vmFilter,null);
@@ -571,7 +571,7 @@ namespace vmware_net
             //
             // Establish a connection with the Vmware server
             //
-            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VimClient vimClient = fClient.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             //
             // Clear out existing entries
             //
@@ -581,8 +581,8 @@ namespace vmware_net
             //
             // Need to get at the Datacenter for the selected cluster
             //
-            ClusterComputeResource itmCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
+            ClusterComputeResource itmCluster = fCluster.GetCluster(vimClient, cboClusters.SelectedItem.Text);
+            List<Datacenter> lstDatacenters = fDatacenter.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Update datastore list
@@ -616,7 +616,7 @@ namespace vmware_net
             //
             // Update list of network portgroups
             //
-            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetDVPortGroups(vimClient, itmDatacenter);
+            List<DistributedVirtualPortgroup> lstDVPortGroups = fNetwork.GetDVPortGroups(vimClient, itmDatacenter);
             if (lstDVPortGroups != null)
             {
                 foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
@@ -629,7 +629,7 @@ namespace vmware_net
             }
             else
             {
-                List<Network> lstPortGroups = functions.GetPortGroups(vimClient, itmDatacenter);
+                List<Network> lstPortGroups = fNetwork.GetPortGroups(vimClient, itmDatacenter);
                 if (lstPortGroups != null)
                 {
                     foreach (Network itmPortGroup in lstPortGroups)
@@ -644,7 +644,7 @@ namespace vmware_net
             //
             // Get a list of Resource Pools
             //
-            List<ResourcePool> lstResPools = functions.GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            List<ResourcePool> lstResPools = fCluster.GetResPools(vimClient, cboClusters.SelectedItem.Value);
             if (lstResPools != null)
             {
                 foreach (ResourcePool itmResPool in lstResPools)
