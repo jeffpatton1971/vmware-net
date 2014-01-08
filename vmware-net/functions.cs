@@ -48,7 +48,7 @@ namespace vmware_net
                 return vimClient;
             }
         }
-        public static List<Datastore> GetDataStore(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
+        public static List<Datastore> GetDataStores(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
         {
             //
             // Get a list of datastores from a specific datacenter
@@ -107,6 +107,26 @@ namespace vmware_net
                 //
                 //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
                 //Error_Panel.Visible = true;
+                return null;
+            }
+        }
+        public static Datastore GetDatastore(VimClient vimClient, string dsName, Datacenter selectedDC = null)
+        {
+            try
+            {
+                List<Datastore> returnDatastore = GetDataStores(vimClient, selectedDC, dsName);
+                if (returnDatastore.Count == 0)
+                {
+                    return null;
+                }
+                if (returnDatastore.Count > 1)
+                {
+                    throw new VimException("More than one datastore returned.");
+                }
+                return returnDatastore[0];
+            }
+            catch (VimException ex)
+            {
                 return null;
             }
         }
@@ -200,6 +220,26 @@ namespace vmware_net
                 //
                 //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
                 //Error_Panel.Visible = true;
+                return null;
+            }
+        }
+        public static DistributedVirtualPortgroup GetDVPortGroup(VimClient vimClient, Datacenter selectedDC, string pgName)
+        {
+            try
+            {
+                List<DistributedVirtualPortgroup> returnDVPortGroup = GetDVPortGroups(vimClient, selectedDC, pgName);
+                if (returnDVPortGroup.Count == 0)
+                {
+                    return null;
+                }
+                if (returnDVPortGroup.Count > 1)
+                {
+                    throw new VimException("More than one port group returned.");
+                }
+                return returnDVPortGroup[0];
+            }
+            catch (VimException ex)
+            {
                 return null;
             }
         }
@@ -327,7 +367,6 @@ namespace vmware_net
                 return null;
             }
         }
-
         public static VirtualMachine GetVirtualMachine(VimClient vimClient, string vmName, Datacenter selectedDC = null)
         {
             try
@@ -463,7 +502,6 @@ namespace vmware_net
                 return null;
             }
         }
-
         public static ClusterComputeResource GetCluster(VimClient vimClient, string clusterName)
         {
             try

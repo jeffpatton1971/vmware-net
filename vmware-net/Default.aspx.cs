@@ -350,14 +350,12 @@ namespace vmware_net
             //
             // Connect to the selected datastore
             //
-            List<Datastore> lstDatastores = functions.GetDataStore(vimClient, null, cboDatastores.SelectedItem.Text);
-            Datastore itmDatastore = lstDatastores[0];
+            Datastore itmDatastore = functions.GetDatastore(vimClient, cboDatastores.SelectedItem.Text, null);
             txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
             //
             // Connect to portgroup
             //
-            List<DistributedVirtualPortgroup> lstDvPortGroups = functions.GetDVPortGroups(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
-            DistributedVirtualPortgroup itmDvPortGroup = lstDvPortGroups[0];
+            DistributedVirtualPortgroup itmDvPortGroup = functions.GetDVPortGroup(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
             txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
             //
             // Connect to the customizationspec
