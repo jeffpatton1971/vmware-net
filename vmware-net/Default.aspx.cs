@@ -126,17 +126,14 @@ namespace vmware_net
                 cboClusters.Items.Add(thisCluster);
             }
             //
-            // Need to get at the Datacenter
-            //
-            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
-            //
-            // They way i'm calling this is bad, what if there are no clusters returned??? ^^^^^^^
-            //
-            Datacenter itmDatacenter = lstDatacenters[0];
-            //
-            // Get a list of datastores
+            // Get at the ClusterResource
             //
             ClusterComputeResource SelectedCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
+            //
+            // Need to get at the Datacenter
+            //
+            List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, SelectedCluster.Parent.Value);
+            Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Create a list of Datastores to populate later
             //
