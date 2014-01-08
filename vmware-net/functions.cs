@@ -442,6 +442,27 @@ namespace vmware_net
                 return null;
             }
         }
+
+        public static ClusterComputeResource GetCluster(VimClient vimClient, string clusterName)
+        {
+            try
+            {
+                List<ClusterComputeResource> returnCluster = GetClusters(vimClient, clusterName);
+                if (returnCluster.Count == 0)
+                {
+                    return null;
+                }
+                if (returnCluster.Count > 1)
+                {
+                    throw new VimException("More than one cluster returned");
+                }
+                return returnCluster[0];
+            }
+            catch (VimException ex)
+            {
+                return null;
+            }
+        }
         public static List<HostSystem> GetHosts(VimClient vimClient, string hostParent = null)
         {
             //

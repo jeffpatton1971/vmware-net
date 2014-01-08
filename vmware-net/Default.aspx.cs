@@ -129,12 +129,14 @@ namespace vmware_net
             // Need to get at the Datacenter
             //
             List<Datacenter> lstDatacenters = functions.GetDcFromCluster(vimClient, lstClusters[0].Parent.Value);
+            //
+            // They way i'm calling this is bad, what if there are no clusters returned??? ^^^^^^^
+            //
             Datacenter itmDatacenter = lstDatacenters[0];
             //
             // Get a list of datastores
             //
-            List<ClusterComputeResource> SelectedCluster = functions.GetClusters(vimClient, cboClusters.SelectedItem.Text);
-            ClusterComputeResource myCluster = SelectedCluster[0];
+            ClusterComputeResource SelectedCluster = functions.GetCluster(vimClient, cboClusters.SelectedItem.Text);
             //
             // Create a list of Datastores to populate later
             //
@@ -144,7 +146,7 @@ namespace vmware_net
             // grab this list of morefs and use getview to grab the object
             // and add it to the datastore list.
             //
-            foreach (ManagedObjectReference itmDs in myCluster.Datastore)
+            foreach (ManagedObjectReference itmDs in SelectedCluster.Datastore)
             {
                 ViewBase thisDsView = vimClient.GetView(itmDs, null);
                 Datastore thisDatastore = (Datastore)thisDsView;
