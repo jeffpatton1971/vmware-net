@@ -645,6 +645,26 @@ namespace vmware_net
                 return null;
             }
         }
+        public static ResourcePool GetResPool(VimClient vimClient, string ClusterMoRefVal)
+        {
+            try
+            {
+                List<ResourcePool> returnResourcePool = GetResPools(vimClient, ClusterMoRefVal);
+                if (returnResourcePool.Count == 0)
+                {
+                    return null;
+                }
+                if (returnResourcePool.Count > 1)
+                {
+                    throw new VimException("More than one resource pool returned.")
+                }
+                return returnResourcePool[0];
+            }
+            catch (VimException ex)
+            {
+                return null;
+            }
+        }
         public static string ValidateServer(string viServer)
         {
             //

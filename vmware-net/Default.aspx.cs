@@ -372,8 +372,7 @@ namespace vmware_net
             //
             // Get resource pool for selected cluster
             //
-            List<ResourcePool> lstResPools = functions.GetResPools(vimClient, cboClusters.SelectedValue);
-            ResourcePool itmResPool = lstResPools[0];
+            ResourcePool itmResPool = functions.GetResPool(vimClient, cboClusters.SelectedValue);
             //
             // Assign resource pool to specitem
             //
