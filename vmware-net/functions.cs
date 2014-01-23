@@ -219,7 +219,7 @@ namespace vmware_net
                 // if DcMoref and dsFilter are empty return all datastores
                 //
                 List<EntityViewBase> appStoragePods = vimClient.FindEntityViews(typeof(StoragePod), DcMoRef, dsFilter, null);
-                if (appDatastores != null)
+                if (appStoragePods != null)
                 {
                     foreach (EntityViewBase appStoragePod in appStoragePods)
                     {
