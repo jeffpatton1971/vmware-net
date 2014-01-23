@@ -181,6 +181,88 @@ namespace vmware_net
                 return null;
             }
         }
+        public static List<StoragePod> GetStoragePods(VimClient vimClient, Datacenter selectedDC = null, string dsName = null)
+        {
+            //
+            // Get a list of StoragePods from a specific datacenter
+            //
+            List<StoragePod> lstStoragePods = new List<StoragePod>();
+            NameValueCollection dsFilter = new NameValueCollection();
+            ManagedObjectReference DcMoRef = new ManagedObjectReference();
+
+            if (dsName != null)
+            {
+                //
+                // The name of a specific datastore
+                //
+                dsFilter.Add("name", dsName);
+            }
+            else
+            {
+                dsFilter = null;
+            }
+
+            if (selectedDC != null)
+            {
+                //
+                // A specific datacenter to get datastores from
+                //
+                DcMoRef = selectedDC.MoRef;
+            }
+            else
+            {
+                DcMoRef = null;
+            }
+            try
+            {
+                //
+                // if DcMoref and dsFilter are empty return all datastores
+                //
+                List<EntityViewBase> appStoragePods = vimClient.FindEntityViews(typeof(StoragePod), DcMoRef, dsFilter, null);
+                if (appDatastores != null)
+                {
+                    foreach (EntityViewBase appStoragePod in appStoragePods)
+                    {
+                        StoragePod thisStoragePod = (StoragePod)appStoragePod;
+                        lstStoragePods.Add(thisStoragePod);
+                    }
+                    return lstStoragePods;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (VimException ex)
+            {
+                //
+                // VMware Exception occurred
+                //
+                //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
+                //Error_Panel.Visible = true;
+                return null;
+            }
+        }
+        public static StoragePod GetStoragePod(VimClient vimClient, string dsName, Datacenter selectedDC = null)
+        {
+            try
+            {
+                List<StoragePod> returnStoragePod = GetStoragePods(vimClient, selectedDC, dsName);
+                if (returnStoragePod.Count == 0)
+                {
+                    return null;
+                }
+                if (returnStoragePod.Count > 1)
+                {
+                    throw new VimException("More than one datastore returned.");
+                }
+                return returnStoragePod[0];
+            }
+            catch (VimException ex)
+            {
+                return null;
+            }
+        }
     }
     public class fNetwork
     {
