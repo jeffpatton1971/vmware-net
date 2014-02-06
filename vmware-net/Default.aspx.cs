@@ -220,6 +220,15 @@ namespace vmware_net
                 return;
             }
             //
+            //
+            //
+            if (txtTargetVm.Text.Length > 15)
+            {
+                txtErrors.Text = "Please enter a NetBIOS name shorter than 15 characters for the virtual machine.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
             // Has a valid IP address been entered?
             //
             IPAddress theIp;
