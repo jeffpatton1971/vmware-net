@@ -87,9 +87,11 @@ namespace vmware_net
             // To populate the virtual machines to clone from with a filtered list un-comment the  line below that reads
             // from the webconfigurationmanager, and comment or remove the line below that that has no filter.
             //
-            //List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, WebConfigurationManager.AppSettings["clonePrefix"].ToString());
+            //NameValueCollection filter = new NameValueCollection();
+            //filter.Add("name", WebConfigurationManager.AppSettings["clonePrefix"].ToString());
+            //List<VirtualMachine> lstVirtualMachines = functions.GetObjects<VirtualMachine>(vimClient, null, filter, null);
             //
-            List<VirtualMachine> lstVirtualMachines = functions.GetObjects<VirtualMachine>(vimClient, null, null, null);
+            List<VirtualMachine> lstVirtualMachines = functions.GetEntities<VirtualMachine>(vimClient, null, null, null);
             if (lstVirtualMachines != null)
             {
                 foreach (VirtualMachine itmVirtualMachine in lstVirtualMachines)
@@ -103,10 +105,10 @@ namespace vmware_net
             //
             // Get a list of OS Customizations
             //
-            List<CustomizationSpecInfo> lstSpecs = fVm.GetCustomizationSpecs(vimClient);
-            if (lstSpecs != null)
+            CustomizationSpecManager specManager = functions.GetObject<CustomizationSpecManager>(vimClient, vimClient.ServiceContent.CustomizationSpecManager, null);
+            if (specManager != null)
             {
-                foreach (CustomizationSpecInfo itmSpec in lstSpecs)
+                foreach (CustomizationSpecInfo itmSpec in specManager.Info)
                 {
                     ListItem thisSpec = new ListItem();
                     thisSpec.Text = itmSpec.Name;
@@ -117,7 +119,7 @@ namespace vmware_net
             //
             // Get a list of clusters
             //
-            List<ClusterComputeResource> lstClusters = fCluster.GetClusters(vimClient);
+            List<ClusterComputeResource> lstClusters = functions.GetEntities<ClusterComputeResource>(vimClient, null, null, null);
             foreach (ClusterComputeResource itmCluster in lstClusters)
             {
                 ListItem thisCluster = new ListItem();
