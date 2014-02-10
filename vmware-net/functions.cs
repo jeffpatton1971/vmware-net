@@ -54,7 +54,6 @@ namespace vmware_net
             }
             return viServer;
         }
-        
         public static List<T> GetEntities<T>(VimClient vimClient, ManagedObjectReference beginEntity, NameValueCollection filter, string[] properties)
         {
             List<T> things = new List<T>();
@@ -67,7 +66,6 @@ namespace vmware_net
             }
             return things;
         }
-
         public static T GetEntity<T>(VimClient vimClient, ManagedObjectReference beginEntity, NameValueCollection filter, string[] properties)
         {
             EntityViewBase vBase = vimClient.FindEntityView(typeof(T), beginEntity, filter, properties);
@@ -80,8 +78,6 @@ namespace vmware_net
             T thisObject = (T)(object)vBase;
             return thisObject;
         }
-
-
     }
     public class fClient
     {
