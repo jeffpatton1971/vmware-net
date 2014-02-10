@@ -89,7 +89,7 @@ namespace vmware_net
             //
             //List<VirtualMachine> lstVirtualMachines = GetVirtualMachines(vimClient, null, WebConfigurationManager.AppSettings["clonePrefix"].ToString());
             //
-            List<VirtualMachine> lstVMs = functions.GetObjects(vimClient, null, null, null);
+            List<VirtualMachine> lstVMs = functions.GetObjects<VirtualMachine>(vimClient, null, null, null);
 
             List<VirtualMachine> lstVirtualMachines = fVm.GetVirtualMachines(vimClient, null, null);
             if (lstVirtualMachines != null)
