@@ -54,6 +54,27 @@ namespace vmware_net
             }
             return viServer;
         }
+        
+        public static List<T> GetObjects<T>(VimClient vimClient, ManagedObjectReference beginEntity, NameValueCollection filter, string[] properties)
+        {
+            List<T> things = new List<T>();
+            List<EntityViewBase> vBase = vimClient.FindEntityViews(typeof(T), beginEntity, filter, properties);
+
+            foreach (EntityViewBase eBase in vBase)
+            {
+                T thing = (T)(object)eBase;
+                things.Add(thing);
+            }
+            return things;
+        }
+
+        public static T GetObject<T>(VimClient vimClient, ManagedObjectReference beginEntity, NameValueCollection filter, string[] properties)
+        {
+            EntityViewBase vBase = vimClient.FindEntityView(typeof(T), beginEntity, filter, properties);
+            T thing = (T)(object)vBase;
+            return thing;
+        }
+
     }
     public class fClient
     {
