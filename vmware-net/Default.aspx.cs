@@ -88,11 +88,11 @@ namespace vmware_net
             // from the webconfigurationmanager, and comment or remove the line below that that has no filter.
             //
             NameValueCollection filter = new NameValueCollection();
-            //filter.Add("name", WebConfigurationManager.AppSettings["clonePrefix"].ToString());
-            //List<VirtualMachine> lstVirtualMachines = functions.GetObjects<VirtualMachine>(vimClient, null, filter, null);
-            //filter.Remove("name");
+            filter.Add("name", WebConfigurationManager.AppSettings["clonePrefix"].ToString());
+            List<VirtualMachine> lstVirtualMachines = functions.GetEntities<VirtualMachine>(vimClient, null, filter, null);
+            filter.Remove("name");
             //
-            List<VirtualMachine> lstVirtualMachines = functions.GetEntities<VirtualMachine>(vimClient, null, null, null);
+            //List<VirtualMachine> lstVirtualMachines = functions.GetEntities<VirtualMachine>(vimClient, null, null, null);
             if (lstVirtualMachines != null)
             {
                 foreach (VirtualMachine itmVirtualMachine in lstVirtualMachines)
@@ -169,7 +169,11 @@ namespace vmware_net
             //
             // Get a list of network portgroups
             //
-            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetEntities<DistributedVirtualPortgroup>(vimClient, itmDatacenter.MoRef, null, null);
+            filter.Add("name", WebConfigurationManager.AppSettings["portPrefix"].ToString());
+            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetEntities<DistributedVirtualPortgroup>(vimClient, itmDatacenter.MoRef, filter, null);
+            filter.Remove("name");
+            //
+            //List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetEntities<DistributedVirtualPortgroup>(vimClient, itmDatacenter.MoRef, null, null);
             if (lstDVPortGroups != null)
             {
                 foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
@@ -598,9 +602,13 @@ namespace vmware_net
             //
             // Need to get at the Datacenter for the selected cluster
             //
-            ClusterComputeResource itmCluster = fCluster.GetCluster(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = fDatacenter.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
-            Datacenter itmDatacenter = lstDatacenters[0];
+            NameValueCollection filter = new NameValueCollection();
+            filter.Add("name", cboClusters.SelectedItem.Text);
+            ClusterComputeResource itmCluster = functions.GetEntity<ClusterComputeResource>(vimClient, null, filter, null);
+            filter.Remove("name");
+            filter.Add("hostFolder", itmCluster.Parent.Value);
+            Datacenter itmDatacenter = functions.GetEntity<Datacenter>(vimClient, null, filter, null);
+            filter.Remove("hostFolder");
             //
             // Update datastore list
             //
@@ -633,7 +641,11 @@ namespace vmware_net
             //
             // Update list of network portgroups
             //
-            List<DistributedVirtualPortgroup> lstDVPortGroups = fNetwork.GetDVPortGroups(vimClient, itmDatacenter);
+            filter.Add("name", WebConfigurationManager.AppSettings["portPrefix"].ToString());
+            List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetEntities<DistributedVirtualPortgroup>(vimClient, itmDatacenter.MoRef, filter, null);
+            filter.Remove("name");
+            //
+            //List<DistributedVirtualPortgroup> lstDVPortGroups = functions.GetEntities<DistributedVirtualPortgroup>(vimClient, itmDatacenter.MoRef, null, null);
             if (lstDVPortGroups != null)
             {
                 foreach (DistributedVirtualPortgroup itmPortGroup in lstDVPortGroups)
@@ -644,24 +656,12 @@ namespace vmware_net
                     cboPortGroups.Items.Add(thisPortGroup);
                 }
             }
-            else
-            {
-                List<Network> lstPortGroups = fNetwork.GetPortGroups(vimClient, itmDatacenter);
-                if (lstPortGroups != null)
-                {
-                    foreach (Network itmPortGroup in lstPortGroups)
-                    {
-                        ListItem thisPortGroup = new ListItem();
-                        thisPortGroup.Text = itmPortGroup.Name;
-                        thisPortGroup.Value = itmPortGroup.MoRef.ToString();
-                        cboPortGroups.Items.Add(thisPortGroup);
-                    }
-                }
-            }
             //
             // Get a list of Resource Pools
             //
-            List<ResourcePool> lstResPools = fCluster.GetResPools(vimClient, cboClusters.SelectedItem.Value);
+            filter.Add("parent", cboClusters.SelectedItem.Value);
+            List<ResourcePool> lstResPools = functions.GetEntities<ResourcePool>(vimClient, null, filter, null);
+            filter.Remove("parent");
             if (lstResPools != null)
             {
                 foreach (ResourcePool itmResPool in lstResPools)

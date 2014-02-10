@@ -1,6 +1,0 @@
-C:\projects\vmware-net\vmware-net\bin\vmware-net.dll.config
-C:\projects\vmware-net\vmware-net\bin\vmware-net.dll
-C:\projects\vmware-net\vmware-net\bin\vmware-net.pdb
-C:\projects\vmware-net\vmware-net\obj\Debug\vmware-net.csprojResolveAssemblyReference.cache
-C:\projects\vmware-net\vmware-net\obj\Debug\vmware-net.dll
-C:\projects\vmware-net\vmware-net\obj\Debug\vmware-net.pdb
