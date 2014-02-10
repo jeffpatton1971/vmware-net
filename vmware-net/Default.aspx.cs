@@ -77,7 +77,7 @@ namespace vmware_net
             //
             // Establish a connection with the Vmware server
             //
-            VimClient vimClient = fClient.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             if (vimClient == null)
             {
                 return;
@@ -276,8 +276,11 @@ namespace vmware_net
             //
             // Does a vm by this name already exist?
             //
-            VimClient vimClient = fClient.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
-            VirtualMachine chkVirtualMachine = fVm.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            NameValueCollection filter = new NameValueCollection();
+            filter.Add("name", txtTargetVm.Text);
+            VirtualMachine chkVirtualMachine = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            filter.Remove("name");
             if (chkVirtualMachine != null)
             {
                 vimClient.Disconnect();
@@ -293,13 +296,18 @@ namespace vmware_net
             //
             // Connect to selected datacenter
             //
-            ClusterComputeResource itmCluster = fCluster.GetCluster(vimClient, cboClusters.SelectedItem.Text);
-            List<Datacenter> lstDatacenters = fDatacenter.GetDcFromCluster(vimClient, itmCluster.Parent.Value);
-            Datacenter itmDatacenter = lstDatacenters[0];
+            filter.Add("name", cboClusters.SelectedItem.Text);
+            ClusterComputeResource itmCluster = functions.GetEntity<ClusterComputeResource>(vimClient, null, filter, null);
+            filter.Remove("name");
+            filter.Add("hostFolder", itmCluster.Parent.Value);
+            Datacenter itmDatacenter = functions.GetEntity<Datacenter>(vimClient, null, filter, null);
+            filter.Remove("hostFolder");
             //
             // Get a list of hosts in the selected cluster
             //
-            List<HostSystem> lstHosts = fHost.GetHosts(vimClient, cboClusters.SelectedValue);
+            filter.Add("parent", cboClusters.SelectedValue);
+            List<HostSystem> lstHosts = functions.GetEntities<HostSystem>(vimClient, null, filter, null);
+            filter.Remove("parent");
             //
             // Randomly pick host
             //
@@ -308,7 +316,9 @@ namespace vmware_net
             //
             // Connect to selected vm to clone
             //
-            VirtualMachine itmVirtualMachine = fVm.GetVirtualMachine(vimClient, cboSourceVms.SelectedItem.Text, null);
+            filter.Add("name", cboSourceVms.SelectedItem.Text);
+            VirtualMachine itmVirtualMachine = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            filter.Remove("name");
             //
             // Make sure the spec file type matches the guest os
             //
@@ -368,17 +378,22 @@ namespace vmware_net
             //
             // Connect to the selected datastore
             //
-            Datastore itmDatastore = fDatastore.GetDatastore(vimClient, cboDatastores.SelectedItem.Text, null);
+            filter.Add("name", cboDatastores.SelectedItem.Text);
+            Datastore itmDatastore = functions.GetEntity<Datastore>(vimClient, null, filter, null);
+            filter.Remove("name");
             txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
             //
             // Connect to portgroup
             //
-            DistributedVirtualPortgroup itmDvPortGroup = fNetwork.GetDVPortGroup(vimClient, itmDatacenter, cboPortGroups.SelectedItem.Text);
+            filter.Add("name", cboPortGroups.SelectedItem.Text);
+            DistributedVirtualPortgroup itmDvPortGroup = functions.GetEntity<DistributedVirtualPortgroup>(vimClient, null, filter, null);
+            filter.Remove("name");
             txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
             //
             // Connect to the customizationspec
             //
-            CustomizationSpecItem itmSpecItem = fVm.GetCustomizationSpecItem(vimClient, cboCustomizations.SelectedItem.Text);
+            CustomizationSpecManager specManager = functions.GetObject<CustomizationSpecManager>(vimClient, vimClient.ServiceContent.CustomizationSpecManager, null);
+            CustomizationSpecItem itmCustomizationSpecItem = specManager.GetCustomizationSpec(cboCustomizations.SelectedItem.Text);
             txtResults.Text += "Spec : " + cboCustomizations.SelectedItem.Text + "\r\n";
             //
             // Create a new VirtualMachineCloneSpec
@@ -390,7 +405,9 @@ namespace vmware_net
             //
             // Get resource pool for selected cluster
             //
-            ResourcePool itmResPool = fCluster.GetResPool(vimClient, cboClusters.SelectedValue);
+            filter.Add("parent", cboClusters.SelectedValue);
+            ResourcePool itmResPool = functions.GetEntity<ResourcePool>(vimClient, null, filter, null);
+            filter.Remove("parent");
             //
             // Assign resource pool to specitem
             //
@@ -398,7 +415,7 @@ namespace vmware_net
             //
             // Add selected CloneSpec customizations to this CloneSpec
             //
-            mySpec.Customization = itmSpecItem.Spec;
+            mySpec.Customization = itmCustomizationSpecItem.Spec;
             //
             // Handle hostname for either windows or linux
             //
@@ -407,7 +424,7 @@ namespace vmware_net
                 //
                 // Create a windows sysprep object
                 //
-                CustomizationSysprep winIdent = (CustomizationSysprep)itmSpecItem.Spec.Identity;
+                CustomizationSysprep winIdent = (CustomizationSysprep)itmCustomizationSpecItem.Spec.Identity;
                 CustomizationFixedName hostname = new CustomizationFixedName();
                 hostname.Name = txtTargetVm.Text;
                 winIdent.UserData.ComputerName = hostname;
@@ -421,7 +438,7 @@ namespace vmware_net
                 //
                 // Create a Linux "sysprep" object
                 //
-                CustomizationLinuxPrep linIdent = (CustomizationLinuxPrep)itmSpecItem.Spec.Identity;
+                CustomizationLinuxPrep linIdent = (CustomizationLinuxPrep)itmCustomizationSpecItem.Spec.Identity;
                 CustomizationFixedName hostname = new CustomizationFixedName();
                 hostname.Name = txtTargetVm.Text;
                 linIdent.HostName = hostname;
@@ -518,7 +535,7 @@ namespace vmware_net
             //
             // Connect to the virtual switch
             //
-            VmwareDistributedVirtualSwitch dvSwitch = fNetwork.GetDvSwitch(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch);
+            VmwareDistributedVirtualSwitch dvSwitch = functions.GetObject<VmwareDistributedVirtualSwitch>(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch, null);
             //
             // Assign the proper switch port
             //
@@ -550,10 +567,10 @@ namespace vmware_net
             //
             // Connect to the VM in order to set the custom fields
             //
-            VirtualMachine clonedVM = fVm.GetVirtualMachine(vimClient, txtTargetVm.Text, null);
-            NameValueCollection vmFilter = new NameValueCollection();
-            vmFilter.Add("name",txtTargetVm.Text);
-            EntityViewBase vmViewBase = vimClient.FindEntityView(typeof(VirtualMachine),null,vmFilter,null);
+            filter.Add("name", txtTargetVm.Text);
+            VirtualMachine clonedVM = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            filter.Remove("name");
+            EntityViewBase vmViewBase = vimClient.FindEntityView(typeof(VirtualMachine), null, filter, null);
             ManagedEntity vmEntity = new ManagedEntity(vimClient, clonedVM.MoRef);
             CustomFieldsManager fieldManager = new CustomFieldsManager(vimClient, clonedVM.MoRef);
             //
@@ -592,7 +609,7 @@ namespace vmware_net
             //
             // Establish a connection with the Vmware server
             //
-            VimClient vimClient = fClient.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
             //
             // Clear out existing entries
             //
