@@ -232,11 +232,20 @@ namespace vmware_net
                 return;
             }
             //
-            //
+            // Make sure that we don't create a machine with a longer name than what netbios supports
             //
             if (txtTargetVm.Text.Length > 15)
             {
                 txtErrors.Text = "Please enter a NetBIOS name shorter than 15 characters for the virtual machine.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=2009820
+            //
+            if (txtTargetVm.Text.Contains("_"))
+            {
+                txtErrors.Text = "Underscore characters not supported for cloning.";
                 Error_Panel.Visible = true;
                 return;
             }
@@ -355,7 +364,9 @@ namespace vmware_net
             {
                 if (itmVirtualMachine.Guest.GuestFamily != null)
                 {
-                    if ((itmVirtualMachine.Guest.GuestFamily).Contains(specType[specType.GetUpperBound(0)]) == false)
+                    string GuestFamily = itmVirtualMachine.Guest.GuestFamily.ToLower();
+                    string TargetType = specType[specType.GetUpperBound(0)].ToLower();
+                    if (GuestFamily.Contains(TargetType) == false)
                     {
                         vimClient.Disconnect();
                         txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
@@ -566,21 +577,30 @@ namespace vmware_net
             ManagedObjectReference clonedMorRef = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
             //
             // Connect to the VM in order to set the custom fields
+            // Custom Fields are only available when connecting to Vsphere, and not to an individual esxi host
             //
             filter.Add("name", txtTargetVm.Text);
             VirtualMachine clonedVM = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
             filter.Remove("name");
-            EntityViewBase vmViewBase = vimClient.FindEntityView(typeof(VirtualMachine), null, filter, null);
-            ManagedEntity vmEntity = new ManagedEntity(vimClient, clonedVM.MoRef);
-            CustomFieldsManager fieldManager = new CustomFieldsManager(vimClient, clonedVM.MoRef);
+            //
+            // We need to get a list of the Custom Fields from vsphere, that information is stored in ServiceContent.CustomFieldsManager
+            //
+            CustomFieldsManager fieldManager = functions.GetObject<CustomFieldsManager>(vimClient, vimClient.ServiceContent.CustomFieldsManager, null);
             //
             // One or more custom field names could be stored in the web.config and processed in some fashion
             //
-            foreach (CustomFieldDef thisField in clonedVM.AvailableField)
-            { 
+            foreach (CustomFieldDef thisField in fieldManager.Field)
+            {
+                //
+                // These fields exist in my test environment, you will need to use your own inside the quotes
+                //
                 if (thisField.Name.Equals("CreatedBy"))
                 {
-                    fieldManager.SetField(clonedVM.MoRef, 1, txtUsername.Text);
+                    fieldManager.SetField(clonedVM.MoRef, thisField.Key, txtUsername.Text);
+                }
+                if (thisField.Name.Equals("CreatedOn"))
+                {
+                    fieldManager.SetField(clonedVM.MoRef, thisField.Key, System.DateTime.Now.ToString());
                 }
             }
             vimClient.Disconnect();
