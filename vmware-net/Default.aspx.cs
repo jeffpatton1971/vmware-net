@@ -575,34 +575,34 @@ namespace vmware_net
             // The following will make the browser appear to hang, I need to hide this panel, and show a working panel
             //
             ManagedObjectReference clonedMorRef = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
-            //
-            // Connect to the VM in order to set the custom fields
-            // Custom Fields are only available when connecting to Vsphere, and not to an individual esxi host
-            //
-            filter.Add("name", txtTargetVm.Text);
-            VirtualMachine clonedVM = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
-            filter.Remove("name");
-            //
-            // We need to get a list of the Custom Fields from vsphere, that information is stored in ServiceContent.CustomFieldsManager
-            //
-            CustomFieldsManager fieldManager = functions.GetObject<CustomFieldsManager>(vimClient, vimClient.ServiceContent.CustomFieldsManager, null);
-            //
-            // One or more custom field names could be stored in the web.config and processed in some fashion
-            //
-            foreach (CustomFieldDef thisField in fieldManager.Field)
-            {
-                //
-                // These fields exist in my test environment, you will need to use your own inside the quotes
-                //
-                if (thisField.Name.Equals("CreatedBy"))
-                {
-                    fieldManager.SetField(clonedVM.MoRef, thisField.Key, txtUsername.Text);
-                }
-                if (thisField.Name.Equals("CreatedOn"))
-                {
-                    fieldManager.SetField(clonedVM.MoRef, thisField.Key, System.DateTime.Now.ToString());
-                }
-            }
+            ////
+            //// Connect to the VM in order to set the custom fields
+            //// Custom Fields are only available when connecting to Vsphere, and not to an individual esxi host
+            ////
+            //filter.Add("name", txtTargetVm.Text);
+            //VirtualMachine clonedVM = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            //filter.Remove("name");
+            ////
+            //// We need to get a list of the Custom Fields from vsphere, that information is stored in ServiceContent.CustomFieldsManager
+            ////
+            //CustomFieldsManager fieldManager = functions.GetObject<CustomFieldsManager>(vimClient, vimClient.ServiceContent.CustomFieldsManager, null);
+            ////
+            //// One or more custom field names could be stored in the web.config and processed in some fashion
+            ////
+            //foreach (CustomFieldDef thisField in fieldManager.Field)
+            //{
+            //    //
+            //    // These fields exist in my test environment, you will need to use your own inside the quotes
+            //    //
+            //    if (thisField.Name.Equals("CreatedBy"))
+            //    {
+            //        fieldManager.SetField(clonedVM.MoRef, thisField.Key, txtUsername.Text);
+            //    }
+            //    if (thisField.Name.Equals("CreatedOn"))
+            //    {
+            //        fieldManager.SetField(clonedVM.MoRef, thisField.Key, System.DateTime.Now.ToString());
+            //    }
+            //}
             vimClient.Disconnect();
             //
             // Hide the vm controls and show the result box
