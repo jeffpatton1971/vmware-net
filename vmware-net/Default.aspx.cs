@@ -138,7 +138,7 @@ namespace vmware_net
             {
                 ListItem thisCluster = new ListItem();
                 thisCluster.Text = itmCluster.Name;
-                thisCluster.Value = itmCluster.MoRef.Value;
+                thisCluster.Value = itmCluster.MoRef.ToString();
                 cboClusters.Items.Add(thisCluster);
             }
             //
@@ -176,7 +176,7 @@ namespace vmware_net
             {
                 ListItem thisDatastore = new ListItem();
                 thisDatastore.Text = itmDatastore.Name;
-                thisDatastore.Value = itmDatastore.MoRef.Value;
+                thisDatastore.Value = itmDatastore.MoRef.ToString();
                 cboDatastores.Items.Add(thisDatastore);
             }
             //
@@ -752,7 +752,7 @@ namespace vmware_net
             {
                 ListItem thisDatastore = new ListItem();
                 thisDatastore.Text = itmDatastore.Name;
-                thisDatastore.Value = itmDatastore.MoRef.Value;
+                thisDatastore.Value = itmDatastore.MoRef.ToString();
                 cboDatastores.Items.Add(thisDatastore);
             }
             //
