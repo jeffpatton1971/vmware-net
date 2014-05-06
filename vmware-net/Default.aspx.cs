@@ -200,7 +200,8 @@ namespace vmware_net
             //
             // Get a list of Resource Pools
             //
-            filter.Add("parent", cboClusters.SelectedItem.Value);
+            Globals.myCluster = new ManagedObjectReference(cboClusters.SelectedItem.Value);
+            filter.Add("parent", Globals.myCluster.Value);
             List<ResourcePool> lstResPools = functions.GetEntities<ResourcePool>(vimClient, null, filter, null);
             filter.Remove("parent");
             if (lstResPools != null)
