@@ -385,9 +385,7 @@ namespace vmware_net
                 //
                 // Connect to selected datacenter
                 //
-                filter.Add("name", cboClusters.SelectedItem.Text);
                 ClusterComputeResource itmCluster = functions.GetObject<ClusterComputeResource>(vimClient, Globals.myCluster, null);
-                filter.Remove("name");
                 filter.Add("hostFolder", itmCluster.Parent.Value);
                 Datacenter itmDatacenter = functions.GetEntity<Datacenter>(vimClient, null, filter, null);
                 filter.Remove("hostFolder");
