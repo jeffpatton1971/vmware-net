@@ -21,6 +21,19 @@ namespace vmware_net
         //
         public static string sViServer;
         //public static string sViServer = WebConfigurationManager.AppSettings["viServer"].ToString();
+        //
+        // The following was added to branch Use_MoRefs, going to start doing something smart and use
+        // the morefs from the various things that I attach to, this should reduce the number of calls
+        // back to the server that I need.
+        //
+        public static ManagedObjectReference mySourceVM;
+        public static ManagedObjectReference myCustomization;
+        public static ManagedObjectReference myCluster;
+        public static ManagedObjectReference myDatacenter;
+        public static ManagedObjectReference myDatastore;
+        public static ManagedObjectReference myPortGroup;
+        public static ManagedObjectReference myTask;
+        public static ManagedObjectReference myClone;
     }
     public partial class Default : System.Web.UI.Page
     {
