@@ -648,12 +648,12 @@ namespace vmware_net
                 //
                 // Perform the clone
                 //
-                ManagedObjectReference taskMoRef = itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, targetVM, mySpec);
-                Task cloneVmTask = new Task(vimClient, taskMoRef);
+                Globals.myTask = itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, targetVM, mySpec);
+                Task cloneVmTask = new Task(vimClient, Globals.myTask);
                 //
                 // The following will make the browser appear to hang, I need to hide this panel, and show a working panel
                 //
-                ManagedObjectReference clonedMorRef = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
+                Globals.myClone = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
                 ////
                 //// Connect to the VM in order to set the custom fields
                 //// Custom Fields are only available when connecting to Vsphere, and not to an individual esxi host
