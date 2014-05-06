@@ -228,6 +228,18 @@ namespace vmware_net
             //
             // Ready to provision
             //
+            //
+            // Populate the moRef objects with actual values
+            //
+            Globals.mySourceVM = new ManagedObjectReference(cboSourceVms.SelectedItem.Value);
+            Globals.myCustomization = new ManagedObjectReference(cboCustomizations.SelectedItem.Value);
+            Globals.myCluster = new ManagedObjectReference(cboClusters.SelectedItem.Value);
+            Globals.myDatastore = new ManagedObjectReference(cboDatastores.SelectedItem.Value);
+            Globals.myPortGroup = new ManagedObjectReference(cboPortGroups.SelectedItem.Value);
+            //
+            // The idea of using the page to do more than one VM failed rather miserably
+            // I'll remove this code as I migrate to using moRefs for everything.
+            //
             string[] targetVMs;
             string[] targetIPs;
             char[] splitChar;
