@@ -241,9 +241,6 @@ namespace vmware_net
             char[] splitChar;
             string targetVM = txtTargetVm.Text;
             Results_Panel.Visible = false;
-            //
-            // Looping through each vm
-            //
             string targetIP = txtIpAddress.Text;
             //
             // Need a random number to pick a random virtual host to place the new vm on
