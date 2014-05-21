@@ -93,6 +93,18 @@
                 <div class="span-6 last">&nbsp;</div>
             </div>
         </asp:Panel>
+        <asp:Panel ID="Working_Panel" runat="server" Visible="false" BackColor="White">
+            <div id="working_panel_div">
+                <div id="wp_Panel_Label" class="span-24 last" style="text-align: center">
+                    <asp:Label ID="lblWorkingPanelLabel" runat="server" Text="Working" Font-Bold="True"></asp:Label>
+                </div>
+                <br />
+                <div class="span-6">&nbsp;</div>
+                <div id="wp_control" class="span-12">
+                    <asp:TextBox ID="txtWorking" runat="server" TextMode="MultiLine" Width="100%" ReadOnly="true" BackColor="White"></asp:TextBox><br />
+                </div>
+            </div>
+        </asp:Panel>
         <asp:Panel ID="Error_Panel" runat="server" Visible="False" BackColor="White">
             <div id="error_panel_div">
                 <div id="ep_Panel_Label" class="span-24 last" style="text-align: center">

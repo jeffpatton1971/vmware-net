@@ -57,6 +57,12 @@ namespace vmware_net
             Error_Panel.Style.Add("height", "100%");
             Error_Panel.Style.Add("width", "960px");
             //
+            //
+            //
+            Working_Panel.Style.Add("position", "absolute;right:auto;left:auto");
+            Working_Panel.Style.Add("height", "100%");
+            Working_Panel.Style.Add("width", "960px");
+            //
             // Layout the results panel
             //
             Results_Panel.Style.Add("position", "absolute;right:auto;left:auto");
@@ -592,6 +598,8 @@ namespace vmware_net
             //
             // Perform the clone
             //
+            txtWorking.Text = "Currently cloning " + targetVM + " please wait.";
+            Working_Panel.Visible = true;
             Globals.myTask = itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, targetVM, mySpec);
             Task cloneVmTask = new Task(vimClient, Globals.myTask);
             //
@@ -630,6 +638,7 @@ namespace vmware_net
             //
             // Hide the vm controls and show the result box
             //
+            Working_Panel.Visible = false;
             Vm_Panel.Visible = false;
             Results_Panel.Visible = true;
         }
