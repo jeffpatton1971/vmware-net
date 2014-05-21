@@ -265,6 +265,33 @@ namespace vmware_net {
         protected global::System.Web.UI.WebControls.Button cmdClose;
         
         /// <summary>
+        /// Working_Panel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Working_Panel;
+        
+        /// <summary>
+        /// lblWorkingPanelLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblWorkingPanelLabel;
+        
+        /// <summary>
+        /// txtWorking control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtWorking;
+        
+        /// <summary>
         /// Error_Panel control.
         /// </summary>
         /// <remarks>
