@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Web;
 using System.Web.Configuration;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Text;
 using System.Net;
 using VMware.Vim;
 
@@ -241,455 +238,407 @@ namespace vmware_net
             // The idea of using the page to do more than one VM failed rather miserably
             // I'll remove this code as I migrate to using moRefs for everything.
             //
-            string[] targetVMs;
-            string[] targetIPs;
             char[] splitChar;
-            if (txtTargetVm.Text.Contains(";"))
+            string targetVM = txtTargetVm.Text;
+            Results_Panel.Visible = false;
+            //
+            // Looping through each vm
+            //
+            string targetIP = txtIpAddress.Text;
+            //
+            // Need a random number to pick a random virtual host to place the new vm on
+            //
+            Random rand = new Random();
+            //
+            // Validate user entries
+            //
+            //
+            // Do we have a value for the target vm?
+            //
+            if (targetVM == null || targetVM == "")
             {
-                //
-                // Multiple hostnames detected
-                //
-                splitChar = new char[] { ';' };
-                targetVMs = txtTargetVm.Text.Split(splitChar);
-            }
-            else
-            {
-                //
-                // Single hostname detected
-                //
-                targetVMs = new string[]{ txtTargetVm.Text };
-            }
-            if (txtIpAddress.Text.Contains(";"))
-            {
-                //
-                // Multiple IP Addresses detected
-                //
-                splitChar = new char[] { ';' };
-                targetIPs = txtIpAddress.Text.Split(splitChar);
-            }
-            else
-            {
-                //
-                // Single IP Address detected
-                //
-                targetIPs = new string[] { txtIpAddress.Text };
-            }
-            if (targetVMs.Count() != targetIPs.Count())
-            {
-                //
-                // A mismatch has been detected
-                //
-                txtErrors.Text = "The number hosts and number of address do not match, please check your values and try again.";
+                txtErrors.Text = "Please enter a name for the virtual machine.";
                 Error_Panel.Visible = true;
                 return;
             }
             //
-            // we'll need a counter so we can tick through the IP Addresses
+            // Make sure that we don't create a machine with a longer name than what netbios supports
             //
-            int counter = 0;
-            foreach (string targetVM in targetVMs)
+            if (targetVM.Length > 15)
             {
-                Results_Panel.Visible = false;
-                //
-                // Looping through each vm
-                //
-                string targetIP = targetIPs[counter];
-                counter++;
-                //
-                // Need a random number to pick a random virtual host to place the new vm on
-                //
-                Random rand = new Random();
-                //
-                // Validate user entries
-                //
-                //
-                // Do we have a value for the target vm?
-                //
-                if (targetVM == null || targetVM == "")
-                {
-                    txtErrors.Text = "Please enter a name for the virtual machine.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // Make sure that we don't create a machine with a longer name than what netbios supports
-                //
-                if (targetVM.Length > 15)
-                {
-                    txtErrors.Text = "Please enter a NetBIOS name shorter than 15 characters for the virtual machine.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=2009820
-                //
-                if (targetVM.Contains("_"))
-                {
-                    txtErrors.Text = "Underscore characters not supported for cloning.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // Has a valid IP address been entered?
-                //
-                IPAddress theIp;
-                bool ipResult = IPAddress.TryParse(targetIP, out theIp);
-                if (ipResult != true)
-                {
-                    txtErrors.Text = "Please enter a valid IP Address.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // This does some basic checking on a subnet
-                //
-                IPAddress theMask;
-                bool mskResult = IPAddress.TryParse(txtSubnet.Text, out theMask);
-                if (mskResult != true)
-                {
-                    txtErrors.Text = "Please enter a valid Subnet Mask.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // Has a valid IP been entered for the gateway?
-                //
-                IPAddress theGateway;
-                bool gwResult = IPAddress.TryParse(txtGateway.Text, out theGateway);
-                if (gwResult != true)
-                {
-                    txtErrors.Text = "Please entera valid IP Address for the default gateway.";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // Does a vm by this name already exist?
-                //
-                VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
-                NameValueCollection filter = new NameValueCollection();
-                filter.Add("name", targetVM);
-                VirtualMachine chkVirtualMachine = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
-                filter.Remove("name");
-                if (chkVirtualMachine != null)
-                {
-                    vimClient.Disconnect();
-                    txtErrors.Text = "virtual machine " + targetVM + " already exists";
-                    Error_Panel.Visible = true;
-                    return;
-                }
-                //
-                // Need to parse the value of the dropdown
-                //
-                splitChar = new char[] { '.' };
-                string[] specType = cboCustomizations.SelectedValue.Split(splitChar);
-                //
-                // Connect to selected datacenter
-                //
-                ClusterComputeResource itmCluster = functions.GetObject<ClusterComputeResource>(vimClient, Globals.myCluster, null);
-                filter.Add("hostFolder", itmCluster.Parent.Value);
-                Datacenter itmDatacenter = functions.GetEntity<Datacenter>(vimClient, null, filter, null);
-                filter.Remove("hostFolder");
-                //
-                // Get a list of hosts in the selected cluster
-                //
-                ManagedObjectReference[] lstHosts = itmCluster.Host;
-                //
-                // Randomly pick host
-                //
-                HostSystem selectedHost = functions.GetObject<HostSystem>(vimClient, lstHosts[rand.Next(0, lstHosts.Count())], null);
+                txtErrors.Text = "Please enter a NetBIOS name shorter than 15 characters for the virtual machine.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=2009820
+            //
+            if (targetVM.Contains("_"))
+            {
+                txtErrors.Text = "Underscore characters not supported for cloning.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // Has a valid IP address been entered?
+            //
+            IPAddress theIp;
+            bool ipResult = IPAddress.TryParse(targetIP, out theIp);
+            if (ipResult != true)
+            {
+                txtErrors.Text = "Please enter a valid IP Address.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // This does some basic checking on a subnet
+            //
+            IPAddress theMask;
+            bool mskResult = IPAddress.TryParse(txtSubnet.Text, out theMask);
+            if (mskResult != true)
+            {
+                txtErrors.Text = "Please enter a valid Subnet Mask.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // Has a valid IP been entered for the gateway?
+            //
+            IPAddress theGateway;
+            bool gwResult = IPAddress.TryParse(txtGateway.Text, out theGateway);
+            if (gwResult != true)
+            {
+                txtErrors.Text = "Please entera valid IP Address for the default gateway.";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // Does a vm by this name already exist?
+            //
+            VimClient vimClient = functions.ConnectServer(Globals.sViServer, Globals.sUsername, Globals.sPassword);
+            NameValueCollection filter = new NameValueCollection();
+            filter.Add("name", targetVM);
+            VirtualMachine chkVirtualMachine = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            filter.Remove("name");
+            if (chkVirtualMachine != null)
+            {
+                vimClient.Disconnect();
+                txtErrors.Text = "virtual machine " + targetVM + " already exists";
+                Error_Panel.Visible = true;
+                return;
+            }
+            //
+            // Need to parse the value of the dropdown
+            //
+            splitChar = new char[] { '.' };
+            string[] specType = cboCustomizations.SelectedValue.Split(splitChar);
+            //
+            // Connect to selected datacenter
+            //
+            ClusterComputeResource itmCluster = functions.GetObject<ClusterComputeResource>(vimClient, Globals.myCluster, null);
+            filter.Add("hostFolder", itmCluster.Parent.Value);
+            Datacenter itmDatacenter = functions.GetEntity<Datacenter>(vimClient, null, filter, null);
+            filter.Remove("hostFolder");
+            //
+            // Get a list of hosts in the selected cluster
+            //
+            ManagedObjectReference[] lstHosts = itmCluster.Host;
+            //
+            // Randomly pick host
+            //
+            HostSystem selectedHost = functions.GetObject<HostSystem>(vimClient, lstHosts[rand.Next(0, lstHosts.Count())], null);
 
-                //HostSystem selectedHost = lstHosts[rand.Next(0, lstHosts.Count)];
-                txtResults.Text = "Host : " + selectedHost.Name + "\r\n";
-                //
-                // Connect to selected vm to clone
-                //
-                filter.Add("name", cboSourceVms.SelectedItem.Text);
-                VirtualMachine itmVirtualMachine = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
-                filter.Remove("name");
-                //
-                // Make sure the spec file type matches the guest os
-                //
-                //
-                // The commented code could be used to poweron a vm, check it's guestfamily and then turn it off.
-                //
-                //string GuestFamily = null;
-                //if (itmVirtualMachine.Runtime.PowerState == VirtualMachinePowerState.poweredOff)
-                //{
-                //    //
-                //    // We can power on the vm to get the guestfamily property
-                //    //
-                //    itmVirtualMachine.PowerOnVM(null);
-                //    //
-                //    // Set the GuestFamily var
-                //    //
-                //    while (itmVirtualMachine.Guest.GuestFamily == null)
-                //    {
-                //        //
-                //        // Need to grab the current guest status from the vm
-                //        //
-                //        itmVirtualMachine.Reload();
-                //        GuestFamily = itmVirtualMachine.Guest.GuestFamily;
-                //    }
-                //    //
-                //    // Turn the VM back off
-                //    //
-                //    itmVirtualMachine.PowerOffVM();
-                //}
-                //
-                // Added this test to accomodate cloning templates to vm's, per Ryan Lawrence.
-                //
-                if (!(chkTemplate.Checked))
+            //HostSystem selectedHost = lstHosts[rand.Next(0, lstHosts.Count)];
+            txtResults.Text = "Host : " + selectedHost.Name + "\r\n";
+            //
+            // Connect to selected vm to clone
+            //
+            filter.Add("name", cboSourceVms.SelectedItem.Text);
+            VirtualMachine itmVirtualMachine = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            filter.Remove("name");
+            //
+            // Make sure the spec file type matches the guest os
+            //
+            //
+            // The commented code could be used to poweron a vm, check it's guestfamily and then turn it off.
+            //
+            //string GuestFamily = null;
+            //if (itmVirtualMachine.Runtime.PowerState == VirtualMachinePowerState.poweredOff)
+            //{
+            //    //
+            //    // We can power on the vm to get the guestfamily property
+            //    //
+            //    itmVirtualMachine.PowerOnVM(null);
+            //    //
+            //    // Set the GuestFamily var
+            //    //
+            //    while (itmVirtualMachine.Guest.GuestFamily == null)
+            //    {
+            //        //
+            //        // Need to grab the current guest status from the vm
+            //        //
+            //        itmVirtualMachine.Reload();
+            //        GuestFamily = itmVirtualMachine.Guest.GuestFamily;
+            //    }
+            //    //
+            //    // Turn the VM back off
+            //    //
+            //    itmVirtualMachine.PowerOffVM();
+            //}
+            //
+            // Added this test to accomodate cloning templates to vm's, per Ryan Lawrence.
+            //
+            if (!(chkTemplate.Checked))
+            {
+                if (itmVirtualMachine.Guest.GuestFamily != null)
                 {
-                    if (itmVirtualMachine.Guest.GuestFamily != null)
+                    string GuestFamily = itmVirtualMachine.Guest.GuestFamily.ToLower();
+                    string TargetType = specType[specType.GetUpperBound(0)].ToLower();
+                    if (GuestFamily.Contains(TargetType) == false)
                     {
-                        string GuestFamily = itmVirtualMachine.Guest.GuestFamily.ToLower();
-                        string TargetType = specType[specType.GetUpperBound(0)].ToLower();
-                        if (GuestFamily.Contains(TargetType) == false)
-                        {
-                            vimClient.Disconnect();
-                            txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
-                            Error_Panel.Visible = true;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        //
-                        // Sometimes the GuestFamily property isn't populated
-                        //
                         vimClient.Disconnect();
-                        txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
+                        txtErrors.Text = "You specified a " + specType[specType.GetUpperBound(0)] + " spec file to clone a " + itmVirtualMachine.Guest.GuestFamily + " virtual machine.";
                         Error_Panel.Visible = true;
                         return;
                     }
                 }
-                txtResults.Text += "Source : " + itmVirtualMachine.Name + "\r\n";
-                //
-                // Connect to the selected datastore
-                //
-                filter.Add("name", cboDatastores.SelectedItem.Text);
-                Datastore itmDatastore = functions.GetEntity<Datastore>(vimClient, null, filter, null);
-                filter.Remove("name");
-                txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
-                //
-                // Connect to portgroup
-                //
-                filter.Add("name", cboPortGroups.SelectedItem.Text);
-                DistributedVirtualPortgroup itmDvPortGroup = functions.GetEntity<DistributedVirtualPortgroup>(vimClient, null, filter, null);
-                filter.Remove("name");
-                txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
-                //
-                // Connect to the customizationspec
-                //
-                CustomizationSpecManager specManager = functions.GetObject<CustomizationSpecManager>(vimClient, vimClient.ServiceContent.CustomizationSpecManager, null);
-                CustomizationSpecItem itmCustomizationSpecItem = specManager.GetCustomizationSpec(cboCustomizations.SelectedItem.Text);
-                txtResults.Text += "Spec : " + cboCustomizations.SelectedItem.Text + "\r\n";
-                //
-                // Create a new VirtualMachineCloneSpec
-                //
-                VirtualMachineCloneSpec mySpec = new VirtualMachineCloneSpec();
-                mySpec.Location = new VirtualMachineRelocateSpec();
-                mySpec.Location.Datastore = itmDatastore.MoRef;
-                mySpec.Location.Host = selectedHost.MoRef;
-                //
-                // Get resource pool for selected cluster
-                //
-                //filter.Add("parent", cboClusters.SelectedValue);
-                filter.Add("parent", itmCluster.Parent.ToString());
-                //ResourcePool itmResPool = functions.GetEntity<ResourcePool>(vimClient, null, filter, null);
-                ResourcePool itmResPool = functions.GetObject<ResourcePool>(vimClient, itmCluster.ResourcePool, null);
-                filter.Remove("parent");
-                //
-                // Assign resource pool to specitem
-                //
-                mySpec.Location.Pool = itmResPool.MoRef;
-                //
-                // Add selected CloneSpec customizations to this CloneSpec
-                //
-                mySpec.Customization = itmCustomizationSpecItem.Spec;
-                //
-                // Handle hostname for either windows or linux
-                //
-                if (specType[specType.GetUpperBound(0)] == "Windows")
+                else
                 {
                     //
-                    // Create a windows sysprep object
+                    // Sometimes the GuestFamily property isn't populated
                     //
-                    CustomizationSysprep winIdent = (CustomizationSysprep)itmCustomizationSpecItem.Spec.Identity;
-                    CustomizationFixedName hostname = new CustomizationFixedName();
-                    hostname.Name = targetVM;
-                    winIdent.UserData.ComputerName = hostname;
-                    //
-                    // Store identity in this CloneSpec
-                    //
-                    mySpec.Customization.Identity = winIdent;
+                    vimClient.Disconnect();
+                    txtErrors.Text = "The virtual machine " + itmVirtualMachine.Name.ToString() + " has no GuestFamily property populated, please power on this VM and verify that it's a supported Guest Os.";
+                    Error_Panel.Visible = true;
+                    return;
                 }
-                if (specType[specType.GetUpperBound(0)] == "Linux")
-                {
-                    //
-                    // Create a Linux "sysprep" object
-                    //
-                    CustomizationLinuxPrep linIdent = (CustomizationLinuxPrep)itmCustomizationSpecItem.Spec.Identity;
-                    CustomizationFixedName hostname = new CustomizationFixedName();
-                    hostname.Name = targetVM;
-                    linIdent.HostName = hostname;
-                    //
-                    // Uncomment the line below to add a suffix to linux vm's
-                    //
-                    // linIdent.Domain = WebConfigurationManager.AppSettings["dnsSuffix"].ToString();
-                    //
-                    // Store identity in this CloneSpec
-                    //
-                    mySpec.Customization.Identity = linIdent;
-                }
-                //
-                // Create a new ConfigSpec
-                //
-                mySpec.Config = new VirtualMachineConfigSpec();
-                //
-                // Set number of CPU's
-                //
-                int numCpus = new int();
-                numCpus = Convert.ToInt16(cboCpus.SelectedValue);
-                mySpec.Config.NumCPUs = numCpus;
-                txtResults.Text += "CPU : " + numCpus + "\r\n";
-                //
-                // Set amount of RAM
-                //
-                long memoryMb = new long();
-                memoryMb = (long)(Convert.ToInt16(cboRam.SelectedValue) * 1024);
-                mySpec.Config.MemoryMB = memoryMb;
-                txtResults.Text += "Ram : " + memoryMb + "\r\n";
-                //
-                // Only handle the first network card
-                //
-                mySpec.Customization.NicSettingMap = new CustomizationAdapterMapping[1];
-                mySpec.Customization.NicSettingMap[0] = new CustomizationAdapterMapping();
-                //
-                // Read in the DNS from web.config and assign
-                //
-                string[] ipDns = new string[1];
-                ipDns[0] = txtDnsServer.Text;
-                mySpec.Customization.GlobalIPSettings = new CustomizationGlobalIPSettings();
-                mySpec.Customization.GlobalIPSettings.DnsServerList = ipDns;
-                txtResults.Text += "DNS : " + ipDns[0] + "\r\n";
-                //
-                // Create a new networkDevice
-                //
-                VirtualDevice networkDevice = new VirtualDevice();
-                foreach (VirtualDevice vDevice in itmVirtualMachine.Config.Hardware.Device)
-                {
-                    //
-                    // get nic on vm
-                    //
-                    if (vDevice.DeviceInfo.Label.Contains("Network"))
-                    {
-                        networkDevice = vDevice;
-                    }
-                }
-                //
-                // Create a DeviceSpec
-                //
-                VirtualDeviceConfigSpec[] devSpec = new VirtualDeviceConfigSpec[0];
-                mySpec.Config.DeviceChange = new VirtualDeviceConfigSpec[1];
-                mySpec.Config.DeviceChange[0] = new VirtualDeviceConfigSpec();
-                mySpec.Config.DeviceChange[0].Operation = VirtualDeviceConfigSpecOperation.edit;
-                mySpec.Config.DeviceChange[0].Device = networkDevice;
-                //
-                // Define network settings for the new vm
-                //
-                //
-                // Assign IP Address
-                //
-                CustomizationFixedIp ipAddress = new CustomizationFixedIp();
-                ipAddress.IpAddress = targetIP;
-                mySpec.Customization.NicSettingMap[0].Adapter = new CustomizationIPSettings();
-                txtResults.Text += "IP : " + targetIP + "\r\n";
-                //
-                // Assign subnet mask
-                //
-                mySpec.Customization.NicSettingMap[0].Adapter.Ip = ipAddress;
-                mySpec.Customization.NicSettingMap[0].Adapter.SubnetMask = txtSubnet.Text;
-                txtResults.Text += "Subnet : " + txtSubnet.Text + "\r\n";
-                //
-                // Assign default gateway
-                //
-                string[] ipGateway = new string[1];
-                ipGateway[0] = txtGateway.Text;
-                mySpec.Customization.NicSettingMap[0].Adapter.Gateway = ipGateway;
-                txtResults.Text += "Gateway : " + txtGateway.Text + "\r\n";
-                //
-                // Create network backing information
-                //
-                VirtualEthernetCardDistributedVirtualPortBackingInfo nicBack = new VirtualEthernetCardDistributedVirtualPortBackingInfo();
-                nicBack.Port = new DistributedVirtualSwitchPortConnection();
-                //
-                // Connect to the virtual switch
-                //
-                VmwareDistributedVirtualSwitch dvSwitch = functions.GetObject<VmwareDistributedVirtualSwitch>(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch, null);
-                //
-                // Assign the proper switch port
-                //
-                nicBack.Port.SwitchUuid = dvSwitch.Uuid;
-                //
-                // Connect the network card to proper port group
-                //
-                nicBack.Port.PortgroupKey = itmDvPortGroup.MoRef.Value;
-                mySpec.Config.DeviceChange[0].Device.Backing = nicBack;
-                //
-                // Enable the network card at bootup
-                //
-                mySpec.Config.DeviceChange[0].Device.Connectable = new VirtualDeviceConnectInfo();
-                mySpec.Config.DeviceChange[0].Device.Connectable.StartConnected = true;
-                mySpec.Config.DeviceChange[0].Device.Connectable.AllowGuestControl = true;
-                mySpec.Config.DeviceChange[0].Device.Connectable.Connected = true;
-                //
-                // Get the vmfolder from the datacenter
-                //
-                //
-                // Perform the clone
-                //
-                Globals.myTask = itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, targetVM, mySpec);
-                Task cloneVmTask = new Task(vimClient, Globals.myTask);
-                //
-                // The following will make the browser appear to hang, I need to hide this panel, and show a working panel
-                //
-                Globals.myClone = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
-                ////
-                //// Connect to the VM in order to set the custom fields
-                //// Custom Fields are only available when connecting to Vsphere, and not to an individual esxi host
-                ////
-                //filter.Add("name", targetVM);
-                //VirtualMachine clonedVM = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
-                //filter.Remove("name");
-                ////
-                //// We need to get a list of the Custom Fields from vsphere, that information is stored in ServiceContent.CustomFieldsManager
-                ////
-                //CustomFieldsManager fieldManager = functions.GetObject<CustomFieldsManager>(vimClient, vimClient.ServiceContent.CustomFieldsManager, null);
-                ////
-                //// One or more custom field names could be stored in the web.config and processed in some fashion
-                ////
-                //foreach (CustomFieldDef thisField in fieldManager.Field)
-                //{
-                //    //
-                //    // These fields exist in my test environment, you will need to use your own inside the quotes
-                //    //
-                //    if (thisField.Name.Equals("CreatedBy"))
-                //    {
-                //        fieldManager.SetField(clonedVM.MoRef, thisField.Key, txtUsername.Text);
-                //    }
-                //    if (thisField.Name.Equals("CreatedOn"))
-                //    {
-                //        fieldManager.SetField(clonedVM.MoRef, thisField.Key, System.DateTime.Now.ToString());
-                //    }
-                //}
-                vimClient.Disconnect();
-                //
-                // Hide the vm controls and show the result box
-                //
-                Vm_Panel.Visible = false;
-                Results_Panel.Visible = true;
             }
+            txtResults.Text += "Source : " + itmVirtualMachine.Name + "\r\n";
+            //
+            // Connect to the selected datastore
+            //
+            filter.Add("name", cboDatastores.SelectedItem.Text);
+            Datastore itmDatastore = functions.GetEntity<Datastore>(vimClient, null, filter, null);
+            filter.Remove("name");
+            txtResults.Text += "Datastore : " + itmDatastore.Name + "\r\n";
+            //
+            // Connect to portgroup
+            //
+            filter.Add("name", cboPortGroups.SelectedItem.Text);
+            DistributedVirtualPortgroup itmDvPortGroup = functions.GetEntity<DistributedVirtualPortgroup>(vimClient, null, filter, null);
+            filter.Remove("name");
+            txtResults.Text += "Portgroup : " + itmDvPortGroup.Name + "\r\n";
+            //
+            // Connect to the customizationspec
+            //
+            CustomizationSpecManager specManager = functions.GetObject<CustomizationSpecManager>(vimClient, vimClient.ServiceContent.CustomizationSpecManager, null);
+            CustomizationSpecItem itmCustomizationSpecItem = specManager.GetCustomizationSpec(cboCustomizations.SelectedItem.Text);
+            txtResults.Text += "Spec : " + cboCustomizations.SelectedItem.Text + "\r\n";
+            //
+            // Create a new VirtualMachineCloneSpec
+            //
+            VirtualMachineCloneSpec mySpec = new VirtualMachineCloneSpec();
+            mySpec.Location = new VirtualMachineRelocateSpec();
+            mySpec.Location.Datastore = itmDatastore.MoRef;
+            mySpec.Location.Host = selectedHost.MoRef;
+            //
+            // Get resource pool for selected cluster
+            //
+            //filter.Add("parent", cboClusters.SelectedValue);
+            filter.Add("parent", itmCluster.Parent.ToString());
+            //ResourcePool itmResPool = functions.GetEntity<ResourcePool>(vimClient, null, filter, null);
+            ResourcePool itmResPool = functions.GetObject<ResourcePool>(vimClient, itmCluster.ResourcePool, null);
+            filter.Remove("parent");
+            //
+            // Assign resource pool to specitem
+            //
+            mySpec.Location.Pool = itmResPool.MoRef;
+            //
+            // Add selected CloneSpec customizations to this CloneSpec
+            //
+            mySpec.Customization = itmCustomizationSpecItem.Spec;
+            //
+            // Handle hostname for either windows or linux
+            //
+            if (specType[specType.GetUpperBound(0)] == "Windows")
+            {
+                //
+                // Create a windows sysprep object
+                //
+                CustomizationSysprep winIdent = (CustomizationSysprep)itmCustomizationSpecItem.Spec.Identity;
+                CustomizationFixedName hostname = new CustomizationFixedName();
+                hostname.Name = targetVM;
+                winIdent.UserData.ComputerName = hostname;
+                //
+                // Store identity in this CloneSpec
+                //
+                mySpec.Customization.Identity = winIdent;
+            }
+            if (specType[specType.GetUpperBound(0)] == "Linux")
+            {
+                //
+                // Create a Linux "sysprep" object
+                //
+                CustomizationLinuxPrep linIdent = (CustomizationLinuxPrep)itmCustomizationSpecItem.Spec.Identity;
+                CustomizationFixedName hostname = new CustomizationFixedName();
+                hostname.Name = targetVM;
+                linIdent.HostName = hostname;
+                //
+                // Uncomment the line below to add a suffix to linux vm's
+                //
+                // linIdent.Domain = WebConfigurationManager.AppSettings["dnsSuffix"].ToString();
+                //
+                // Store identity in this CloneSpec
+                //
+                mySpec.Customization.Identity = linIdent;
+            }
+            //
+            // Create a new ConfigSpec
+            //
+            mySpec.Config = new VirtualMachineConfigSpec();
+            //
+            // Set number of CPU's
+            //
+            int numCpus = new int();
+            numCpus = Convert.ToInt16(cboCpus.SelectedValue);
+            mySpec.Config.NumCPUs = numCpus;
+            txtResults.Text += "CPU : " + numCpus + "\r\n";
+            //
+            // Set amount of RAM
+            //
+            long memoryMb = new long();
+            memoryMb = (long)(Convert.ToInt16(cboRam.SelectedValue) * 1024);
+            mySpec.Config.MemoryMB = memoryMb;
+            txtResults.Text += "Ram : " + memoryMb + "\r\n";
+            //
+            // Only handle the first network card
+            //
+            mySpec.Customization.NicSettingMap = new CustomizationAdapterMapping[1];
+            mySpec.Customization.NicSettingMap[0] = new CustomizationAdapterMapping();
+            //
+            // Read in the DNS from web.config and assign
+            //
+            string[] ipDns = new string[1];
+            ipDns[0] = txtDnsServer.Text;
+            mySpec.Customization.GlobalIPSettings = new CustomizationGlobalIPSettings();
+            mySpec.Customization.GlobalIPSettings.DnsServerList = ipDns;
+            txtResults.Text += "DNS : " + ipDns[0] + "\r\n";
+            //
+            // Create a new networkDevice
+            //
+            VirtualDevice networkDevice = new VirtualDevice();
+            foreach (VirtualDevice vDevice in itmVirtualMachine.Config.Hardware.Device)
+            {
+                //
+                // get nic on vm
+                //
+                if (vDevice.DeviceInfo.Label.Contains("Network"))
+                {
+                    networkDevice = vDevice;
+                }
+            }
+            //
+            // Create a DeviceSpec
+            //
+            VirtualDeviceConfigSpec[] devSpec = new VirtualDeviceConfigSpec[0];
+            mySpec.Config.DeviceChange = new VirtualDeviceConfigSpec[1];
+            mySpec.Config.DeviceChange[0] = new VirtualDeviceConfigSpec();
+            mySpec.Config.DeviceChange[0].Operation = VirtualDeviceConfigSpecOperation.edit;
+            mySpec.Config.DeviceChange[0].Device = networkDevice;
+            //
+            // Define network settings for the new vm
+            //
+            //
+            // Assign IP Address
+            //
+            CustomizationFixedIp ipAddress = new CustomizationFixedIp();
+            ipAddress.IpAddress = targetIP;
+            mySpec.Customization.NicSettingMap[0].Adapter = new CustomizationIPSettings();
+            txtResults.Text += "IP : " + targetIP + "\r\n";
+            //
+            // Assign subnet mask
+            //
+            mySpec.Customization.NicSettingMap[0].Adapter.Ip = ipAddress;
+            mySpec.Customization.NicSettingMap[0].Adapter.SubnetMask = txtSubnet.Text;
+            txtResults.Text += "Subnet : " + txtSubnet.Text + "\r\n";
+            //
+            // Assign default gateway
+            //
+            string[] ipGateway = new string[1];
+            ipGateway[0] = txtGateway.Text;
+            mySpec.Customization.NicSettingMap[0].Adapter.Gateway = ipGateway;
+            txtResults.Text += "Gateway : " + txtGateway.Text + "\r\n";
+            //
+            // Create network backing information
+            //
+            VirtualEthernetCardDistributedVirtualPortBackingInfo nicBack = new VirtualEthernetCardDistributedVirtualPortBackingInfo();
+            nicBack.Port = new DistributedVirtualSwitchPortConnection();
+            //
+            // Connect to the virtual switch
+            //
+            VmwareDistributedVirtualSwitch dvSwitch = functions.GetObject<VmwareDistributedVirtualSwitch>(vimClient, itmDvPortGroup.Config.DistributedVirtualSwitch, null);
+            //
+            // Assign the proper switch port
+            //
+            nicBack.Port.SwitchUuid = dvSwitch.Uuid;
+            //
+            // Connect the network card to proper port group
+            //
+            nicBack.Port.PortgroupKey = itmDvPortGroup.MoRef.Value;
+            mySpec.Config.DeviceChange[0].Device.Backing = nicBack;
+            //
+            // Enable the network card at bootup
+            //
+            mySpec.Config.DeviceChange[0].Device.Connectable = new VirtualDeviceConnectInfo();
+            mySpec.Config.DeviceChange[0].Device.Connectable.StartConnected = true;
+            mySpec.Config.DeviceChange[0].Device.Connectable.AllowGuestControl = true;
+            mySpec.Config.DeviceChange[0].Device.Connectable.Connected = true;
+            //
+            // Get the vmfolder from the datacenter
+            //
+            //
+            // Perform the clone
+            //
+            Globals.myTask = itmVirtualMachine.CloneVM_Task(itmDatacenter.VmFolder, targetVM, mySpec);
+            Task cloneVmTask = new Task(vimClient, Globals.myTask);
+            //
+            // The following will make the browser appear to hang, I need to hide this panel, and show a working panel
+            //
+            Globals.myClone = (ManagedObjectReference)vimClient.WaitForTask(cloneVmTask.MoRef);
+            ////
+            //// Connect to the VM in order to set the custom fields
+            //// Custom Fields are only available when connecting to Vsphere, and not to an individual esxi host
+            ////
+            //filter.Add("name", targetVM);
+            //VirtualMachine clonedVM = functions.GetEntity<VirtualMachine>(vimClient, null, filter, null);
+            //filter.Remove("name");
+            ////
+            //// We need to get a list of the Custom Fields from vsphere, that information is stored in ServiceContent.CustomFieldsManager
+            ////
+            //CustomFieldsManager fieldManager = functions.GetObject<CustomFieldsManager>(vimClient, vimClient.ServiceContent.CustomFieldsManager, null);
+            ////
+            //// One or more custom field names could be stored in the web.config and processed in some fashion
+            ////
+            //foreach (CustomFieldDef thisField in fieldManager.Field)
+            //{
+            //    //
+            //    // These fields exist in my test environment, you will need to use your own inside the quotes
+            //    //
+            //    if (thisField.Name.Equals("CreatedBy"))
+            //    {
+            //        fieldManager.SetField(clonedVM.MoRef, thisField.Key, txtUsername.Text);
+            //    }
+            //    if (thisField.Name.Equals("CreatedOn"))
+            //    {
+            //        fieldManager.SetField(clonedVM.MoRef, thisField.Key, System.DateTime.Now.ToString());
+            //    }
+            //}
+            vimClient.Disconnect();
+            //
+            // Hide the vm controls and show the result box
+            //
+            Vm_Panel.Visible = false;
+            Results_Panel.Visible = true;
         }
         protected void cmdClose_Click(object sender, EventArgs e)
         {
