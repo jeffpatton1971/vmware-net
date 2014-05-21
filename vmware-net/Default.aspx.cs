@@ -344,8 +344,6 @@ namespace vmware_net
             // Randomly pick host
             //
             HostSystem selectedHost = functions.GetObject<HostSystem>(vimClient, lstHosts[rand.Next(0, lstHosts.Count())], null);
-
-            //HostSystem selectedHost = lstHosts[rand.Next(0, lstHosts.Count)];
             txtResults.Text = "Host : " + selectedHost.Name + "\r\n";
             //
             // Connect to selected vm to clone
@@ -441,9 +439,7 @@ namespace vmware_net
             //
             // Get resource pool for selected cluster
             //
-            //filter.Add("parent", cboClusters.SelectedValue);
             filter.Add("parent", itmCluster.Parent.ToString());
-            //ResourcePool itmResPool = functions.GetEntity<ResourcePool>(vimClient, null, filter, null);
             ResourcePool itmResPool = functions.GetObject<ResourcePool>(vimClient, itmCluster.ResourcePool, null);
             filter.Remove("parent");
             //
