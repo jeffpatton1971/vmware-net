@@ -97,7 +97,7 @@ namespace vmware_net
 
                 return vimClient;
             }
-            catch (VimException ex)
+            catch
             {
                 //
                 // VMware Exception occurred
@@ -105,16 +105,6 @@ namespace vmware_net
                 //txtErrors.Text = "A server fault of type " + ex.MethodFault.GetType().Name + " with message '" + ex.Message + "' occured while performing requested operation.";
                 //Error_Panel.Visible = true;
                 return null;
-            }
-            catch (Exception e)
-            {
-                //
-                // Regular Exception occurred
-                //
-                //txtErrors.Text = "A server fault of type " + e.GetType().Name + " with message '" + e.Message + "' occured while performing requested operation.";
-                //Error_Panel.Visible = true;
-                vimClient = null;
-                return vimClient;
             }
         }
     }
