@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using VMware.Vim;
-
     public class functions
     {
         /// <summary>
