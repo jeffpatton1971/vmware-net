@@ -349,6 +349,7 @@ namespace vmware_net
             //
             // Randomly pick host
             //
+
             HostSystem selectedHost = functions.GetObject<HostSystem>(vimClient, lstHosts[rand.Next(0, lstHosts.Count())], null);
             txtResults.Text = "Host : " + selectedHost.Name + "\r\n";
             //
